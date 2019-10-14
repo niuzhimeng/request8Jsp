@@ -352,3 +352,137 @@
         }
     })
 </script>
+
+
+// 请假申请 日期限制
+<script type="text/javascript">
+    // 请假开始日期
+    var startDate = 'field87127';
+    var startTime = 'field87128';
+    // 请假结束日期
+    var endDate = 'field87129';
+    var endTime = 'field87130';
+
+    jQuery(document).ready(function () {
+        checkCustomize = function () {
+            var myFlag = false;
+            var startDateVal = jQuery("#" + startDate).val();
+            var startTimeVal = jQuery("#" + startTime).val();
+            var endDateVal = jQuery("#" + endDate).val();
+            var endTimeVal = jQuery("#" + endTime).val();
+            if (startDateVal === '' || endDateVal === '') {
+                window.top.Dialog.alert('【请假时间】不能为空。');
+                return false;
+            }
+            //  上月1号
+            var localDateFirst = getCurrDate(-1);
+
+            if (startDateVal >= localDateFirst) {
+                myFlag = true;
+            } else {
+                window.top.Dialog.alert('【请假开始时间】不能早于' + localDateFirst)
+                return false;
+            }
+
+            var startDateTime = startDateVal + ' ' + startTimeVal;
+            var endDateTime = endDateVal + ' ' + endTimeVal;
+            if (startDateTime >= endDateTime) {
+                window.top.Dialog.alert('【请假结束时间】不能早于【请假开始时间】')
+                return false;
+            }
+            return myFlag;
+        };
+    });
+
+    /**
+     * 获取当前日期
+     */
+    function getCurrDate(nums) {
+        var myDate = '';
+        jQuery.ajax({
+            async: false,
+            type: "POST",
+            success: function (result, status, xhr) {
+                myDate = new Date(xhr.getResponseHeader("Date"));
+            }
+        });
+        myDate.setMonth(myDate.getMonth() + nums);
+        var year = myDate.getFullYear();
+        var month = myDate.getMonth() + 1;
+        var day = myDate.getDate();
+        if (month < 10) {
+            month = '0' + month;
+        }
+        if (day < 10) {
+            day = '0' + day;
+        }
+        return year + '-' + month + '-' + '01';
+    }
+</script>
+
+
+// 补考勤流程
+<script type="text/javascript">
+    // 请假开始日期
+    var startDate = 'field87625';
+    var startTime = 'field87626';
+    // 请假结束日期
+    var endDate = 'field87627';
+    var endTime = 'field87628';
+
+    jQuery(document).ready(function () {
+        checkCustomize = function () {
+            var myFlag = false;
+            var startDateVal = jQuery("#" + startDate).val();
+            var startTimeVal = jQuery("#" + startTime).val();
+            var endDateVal = jQuery("#" + endDate).val();
+            var endTimeVal = jQuery("#" + endTime).val();
+            if (startDateVal === '' || endDateVal === '') {
+                window.top.Dialog.alert('【日期】不能为空。');
+                return false;
+            }
+            //  上月1号
+            var localDateFirst = getCurrDate(-1);
+
+            if (startDateVal >= localDateFirst) {
+                myFlag = true;
+            } else {
+                window.top.Dialog.alert('【开始时间】不能早于' + localDateFirst);
+                return false;
+            }
+
+            var startDateTime = startDateVal + ' ' + startTimeVal;
+            var endDateTime = endDateVal + ' ' + endTimeVal;
+            if (startDateTime >= endDateTime) {
+                window.top.Dialog.alert('【结束时间】不能早于【开始时间】');
+                return false;
+            }
+            return myFlag;
+        };
+    });
+
+    /**
+     * 获取当前日期
+     */
+    function getCurrDate(nums) {
+        var myDate = '';
+        jQuery.ajax({
+            async: false,
+            type: "POST",
+            success: function (result, status, xhr) {
+                myDate = new Date(xhr.getResponseHeader("Date"));
+            }
+        });
+        myDate.setMonth(myDate.getMonth() + nums);
+        var year = myDate.getFullYear();
+        var month = myDate.getMonth() + 1;
+        var day = myDate.getDate();
+        if (month < 10) {
+            month = '0' + month;
+        }
+        if (day < 10) {
+            day = '0' + day;
+        }
+        return year + '-' + month + '-' + '01';
+    }
+</script>
