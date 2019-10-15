@@ -26,15 +26,24 @@
 <%@ page import="java.util.Map" %>
 
 <%
+    // 根据目录id获取文档
     BaseBean baseBean = new BaseBean();
     try {
-        String flowStr = "OA_DOC";
+        String flowStr = "OA_DOC_BYID";
         String loginId = request.getParameter("loginId");
         String token = request.getParameter("token");
         String currentTime = request.getParameter("currentTime");
         String getCounts = request.getParameter("getCounts");
-        // 文档类型(最新文件 002, 社内要闻 003, 部门动态 004)
-        String documentType = request.getParameter("documentType");
+        // 子目录id
+        String seccategoryId = Util.null2String(request.getParameter("seccategoryId")).trim();
+        if ("".equals(seccategoryId)) {
+            JSONObject errObject = new JSONObject();
+            errObject.put("status", "1");
+            errObject.put("message", "seccategoryId不能为空。");
+            out.clear();
+            out.print(errObject.toJSONString());
+            return;
+        }
 
         int defaultCounts = 5;
         if (getCounts != null && !"".equals(getCounts)) {
@@ -42,40 +51,18 @@
         }
 
 
-        baseBean.writeLog("门户系统获取oa文档 Start============ " + " " + TimeUtil.getCurrentTimeString());
+        baseBean.writeLog("门户系统获取oa文档byId Start============ " + " " + TimeUtil.getCurrentTimeString());
         baseBean.writeLog("loginId: " + loginId);
         baseBean.writeLog("token: " + token);
 
         MD5 md5 = new MD5();
 
         String md5ofStr = md5.getMD5ofStr(currentTime + flowStr + loginId);
-        baseBean.writeLog("oa加密token：" + md5ofStr);
+        baseBean.writeLog("oa加密token：" + md5ofStr + ", 加密前： " + currentTime + flowStr + loginId);
         if (!md5ofStr.equals(token)) {
             JSONObject errObject = new JSONObject();
             errObject.put("status", "1");
             errObject.put("message", "认证失败。");
-            out.clear();
-            out.print(errObject.toJSONString());
-            return;
-        }
-
-        RecordSet recordSet = new RecordSet();
-        recordSet.executeQuery("select mlmc from uf_portal_type where yslx = '" + documentType + "'");
-        StringBuilder idBuilder = new StringBuilder();
-        if (recordSet.next()) {
-            String mlmc = recordSet.getString("mlmc");
-            String[] splits = mlmc.split(",");
-            for (String str : splits) {
-                idBuilder.append("'").append(str).append("',");
-            }
-
-            if (idBuilder.length() > 3) {
-                idBuilder.deleteCharAt(idBuilder.length() - 1);
-            }
-        } else {
-            JSONObject errObject = new JSONObject();
-            errObject.put("status", "1");
-            errObject.put("message", "文档类型不存在。");
             out.clear();
             out.print(errObject.toJSONString());
             return;
@@ -201,7 +188,7 @@
         }
 
         long start = System.currentTimeMillis();
-        DocInfo[] list = getList(user_new, 1, defaultCounts, idBuilder.toString());
+        DocInfo[] list = getList(user_new, 1, defaultCounts, seccategoryId.toString());
         long resultTime = System.currentTimeMillis() - start;
         baseBean.writeLog("获取文档返回总数量： " + list.length + ", 耗时： " + resultTime / 1000);
 
@@ -209,7 +196,7 @@
         JSONArray jsonArray = new JSONArray();
         String oaUrl;
         for (DocInfo docInfo : list) {
-            oaUrl = "http://10.1.11.27/gaodeng?forwardUrl=/docs/docs/DocDsp.jsp?id=" + docInfo.getId() + "&isOpenFirstAss=0";
+            oaUrl = "http://10.1.11.30/gaodeng?forwardUrl=/docs/docs/DocDsp.jsp?id=" + docInfo.getId() + "&isOpenFirstAss=0";
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("docId", docInfo.getId());
             jsonObject.put("docName", docInfo.getDocSubject());
@@ -260,8 +247,6 @@
             var16 = var16 + " and ((docstatus = 7 and (sharelevel>1 or (t1.doccreaterid=" + var4.getUID() + ")) ) or t1.docstatus in ('1','2','5')) ";
             var16 = var16 + "  and seccategory!=0 and (ishistory is null or ishistory = 0) ";
             var16 = var16 + " order by doclastmoddate desc,doclastmodtime desc,id desc";
-            // 如果不是oracle数据库，用下面语句
-            // var16 = var16 + " and seccategory in(" + idList + ") order by doclastmoddate desc,doclastmodtime desc,id desc";
             boolean var17 = false;
             boolean var18 = false;
             String var22;
