@@ -1,30 +1,29 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" %>
-<%@ page import="weaver.docs.webservices.DocInfo" %>
+<%@ page import="com.alibaba.fastjson.JSONArray" %>
+<%@ page import="com.alibaba.fastjson.JSONObject" %>
+<%@ page import="ln.LN" %>
 <%@ page import="weaver.conn.RecordSet" %>
-<%@ page import="weaver.share.ShareManager" %>
-<%@ page import="weaver.docs.docs.DocComInfo" %>
-<%@ page import="weaver.docs.category.MainCategoryComInfo" %>
-<%@ page import="weaver.docs.category.SubCategoryComInfo" %>
-<%@ page import="weaver.hrm.company.DepartmentComInfo" %>
-<%@ page import="weaver.systeminfo.language.LanguageComInfo" %>
-<%@ page import="weaver.docs.category.SecCategoryComInfo" %>
-<%@ page import="weaver.hrm.resource.ResourceComInfo" %>
 <%@ page import="weaver.crm.Maint.CustomerInfoComInfo" %>
 <%@ page import="weaver.docs.category.DocTreeDocFieldComInfo" %>
-<%@ page import="com.alibaba.fastjson.JSONObject" %>
-<%@ page import="com.alibaba.fastjson.JSONArray" %>
-<%@ page import="weaver.hrm.User" %>
-<%@ page import="weaver.systeminfo.SystemEnv" %>
-<%@ page import="java.util.*" %>
-<%@ page import="weaver.systeminfo.SysMaintenanceLog" %>
-<%@ page import="ln.LN" %>
-
+<%@ page import="weaver.docs.category.MainCategoryComInfo" %>
+<%@ page import="weaver.docs.category.SecCategoryComInfo" %>
+<%@ page import="weaver.docs.category.SubCategoryComInfo" %>
+<%@ page import="weaver.docs.docs.DocComInfo" %>
+<%@ page import="weaver.docs.webservices.DocInfo" %>
+<%@ page import="weaver.general.*" %>
 <%@ page import="weaver.hrm.OnLineMonitor" %>
-<%@ page import="weaver.general.BaseBean" %>
-<%@ page import="weaver.general.StaticObj" %>
-<%@ page import="weaver.general.Util" %>
-<%@ page import="weaver.general.TimeUtil" %>
-<%@ page import="weaver.general.MD5" %>
+<%@ page import="weaver.hrm.User" %>
+<%@ page import="weaver.hrm.company.DepartmentComInfo" %>
+<%@ page import="weaver.hrm.resource.ResourceComInfo" %>
+<%@ page import="weaver.share.ShareManager" %>
+<%@ page import="weaver.systeminfo.SysMaintenanceLog" %>
+<%@ page import="weaver.systeminfo.SystemEnv" %>
+
+<%@ page import="weaver.systeminfo.language.LanguageComInfo" %>
+<%@ page import="java.util.ArrayList" %>
+<%@ page import="java.util.Calendar" %>
+<%@ page import="java.util.HashMap" %>
+<%@ page import="java.util.Map" %>
 
 <%
     BaseBean baseBean = new BaseBean();
@@ -59,14 +58,20 @@
             out.print(errObject.toJSONString());
             return;
         }
-        // 查询选中目录
-        List<String> muIdList = new ArrayList<String>();
+
         RecordSet recordSet = new RecordSet();
         recordSet.executeQuery("select mlmc from uf_portal_type where yslx = '" + documentType + "'");
+        StringBuilder idBuilder = new StringBuilder();
         if (recordSet.next()) {
             String mlmc = recordSet.getString("mlmc");
             String[] splits = mlmc.split(",");
-            Collections.addAll(muIdList, splits);
+            for (String str : splits) {
+                idBuilder.append("'").append(str).append("',");
+            }
+
+            if (idBuilder.length() > 3) {
+                idBuilder.deleteCharAt(idBuilder.length() - 1);
+            }
         } else {
             JSONObject errObject = new JSONObject();
             errObject.put("status", "1");
@@ -196,30 +201,25 @@
         }
 
         long start = System.currentTimeMillis();
-        DocInfo[] list = getList(user_new, 1, 500);
+        DocInfo[] list = getList(user_new, 1, defaultCounts, idBuilder.toString());
         long resultTime = System.currentTimeMillis() - start;
         baseBean.writeLog("获取文档返回总数量： " + list.length + ", 耗时： " + resultTime / 1000);
-        int i = 0;
+
         JSONObject jsonObjectAll = new JSONObject();
         JSONArray jsonArray = new JSONArray();
         String oaUrl;
         for (DocInfo docInfo : list) {
-            if (i >= defaultCounts) {
-                break;
-            }
-            if (muIdList.contains(String.valueOf(docInfo.getSeccategory()))) {
-                oaUrl = "http://10.1.11.27/gaodeng?forwardUrl=/docs/docs/DocDsp.jsp?id=" + docInfo.getId() + "&isOpenFirstAss=0";
-                JSONObject jsonObject = new JSONObject();
-                jsonObject.put("docId", docInfo.getId());
-                jsonObject.put("docName", docInfo.getDocSubject());
-                jsonObject.put("creatorName", docInfo.getDoccreatername());
-                jsonObject.put("createDate", docInfo.getDoccreatedate() + " " + docInfo.getDoccreatetime());
-                jsonObject.put("openUrl", oaUrl);
-                jsonObject.put("fromSys", "OA");
+            oaUrl = "http://10.1.11.27/gaodeng?forwardUrl=/docs/docs/DocDsp.jsp?id=" + docInfo.getId() + "&isOpenFirstAss=0";
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("docId", docInfo.getId());
+            jsonObject.put("docName", docInfo.getDocSubject());
+            jsonObject.put("creatorName", docInfo.getDoccreatername());
+            jsonObject.put("createDate", docInfo.getDoccreatedate() + " " + docInfo.getDoccreatetime());
+            jsonObject.put("openUrl", oaUrl);
+            jsonObject.put("fromSys", "OA");
 
-                jsonArray.add(jsonObject);
-                i++;
-            }
+            jsonArray.add(jsonObject);
+
         }
         jsonObjectAll.put("status", "0");
         jsonObjectAll.put("message", "认证成功。");
@@ -227,7 +227,6 @@
 
         baseBean.writeLog("返回的xml： " + jsonObjectAll.toJSONString());
 
-        baseBean.writeLog("筛选后总量： " + i);
         response.setHeader("Content-Type", "application/json;charset=UTF-8");
         out.clear();
         out.print(jsonObjectAll.toJSONString());
@@ -237,7 +236,7 @@
 %>
 
 <%!
-    public DocInfo[] getList(User var1, int var2, int var3) throws Exception {
+    public DocInfo[] getList(User var1, int var2, int var3, String idList) throws Exception {
         User var4 = var1;
         ArrayList var5 = new ArrayList();
         if (var4 != null) {
@@ -272,7 +271,7 @@
                     var29 = var2 * var3 + 1;
                     var30 = (var2 - 1) * var3;
                     var16 = " select " + var16;
-                    var16 = "select * from ( select row_.*, rownum rownum_ from ( " + var16 + " ) row_ where rownum < " + var29 + ") where rownum_ > " + var30;
+                    var16 = "select * from ( select row_.*, rownum rownum_ from ( " + var16 + " ) row_ where row_.seccategory in(" + idList + ") and rownum < " + var29 + ") where rownum_ > " + var30;
                 } else if (var2 > 1) {
                     var29 = var3 * var2;
                     var30 = var3;
@@ -293,7 +292,9 @@
             }
 
             var6.executeSql(var16);
+            new BaseBean().writeLog("获取文档执行sql： " + var16);
 
+            long start = System.currentTimeMillis();
             while (var6.next()) {
                 DocInfo var31 = new DocInfo();
                 var31.setId(Util.getIntValue(Util.null2String(var6.getString("id"))));
@@ -389,6 +390,8 @@
                 var31.setReplaydoccount(var6.getInt("replaydoccount"));
                 var5.add(var31);
             }
+            long resultTime = System.currentTimeMillis() - start;
+            new BaseBean().writeLog("文档循环执行时间： " + resultTime / 1000);
         }
 
         DocInfo[] var27 = new DocInfo[var5.size()];
