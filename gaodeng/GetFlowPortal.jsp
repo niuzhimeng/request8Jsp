@@ -92,6 +92,7 @@
         String toDoSql = "SELECT\n" +
                 "  t1.requestid,\n" +
                 "  t1.requestnamenew,\n" +
+                "  t1.creater,\n" +
                 "  t2.receivedate || ' ' || t2.receivetime pjDate \n" +
                 //"  t2.receivedate + t2.receivetime pjDate \n" +
                 "FROM\n" +
@@ -108,7 +109,7 @@
                 "ORDER BY\n" +
                 "  t2.receivedate DESC,\n" +
                 "  t2.receivetime DESC";
-        // baseBean.writeLog("查询待办的sql： " + toDoSql);
+         baseBean.writeLog("查询待办的sql： " + toDoSql);
 
         rs.executeQuery(toDoSql);
         // 待办总数
@@ -117,6 +118,7 @@
         JSONArray jsonArray = new JSONArray();
         String oaUrl = "";
         int i = 0;
+        RecordSet hrmSet = new RecordSet();
         while (rs.next()) {
             if (i >= defaultCounts) {
                 break;
@@ -125,8 +127,9 @@
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("requestId", rs.getString("requestid"));
             jsonObject.put("requestName", rs.getString("requestnamenew"));
-            jsonObject.put("depName", depName);
-            jsonObject.put("personName", lastName);
+            String[] creaters = hrmInfo(hrmSet, rs.getString("creater"));
+            jsonObject.put("personName", creaters[0]); //创建者姓名
+            jsonObject.put("depName", creaters[1]); // 创建者部门
             jsonObject.put("receiveDate", rs.getString("pjDate"));
             jsonObject.put("openUrl", oaUrl);
             jsonObject.put("fromSys", "OA");
@@ -150,4 +153,16 @@
     }
 
 
+%>
+
+<%!
+    private String[] hrmInfo(RecordSet recordSet, String hrmId) {
+        String[] returnInfo = new String[2];
+        recordSet.executeQuery("select h.lastname, d.departmentname from hrmresource h left join HrmDepartment d on h.departmentid = d.id where h.id = " + hrmId);
+        recordSet.next();
+
+        returnInfo[0] = recordSet.getString("lastname");
+        returnInfo[1] = recordSet.getString("departmentname");
+        return returnInfo;
+    }
 %>

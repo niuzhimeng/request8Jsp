@@ -78,7 +78,9 @@
         String toDoSql = "SELECT \n" +
                 "\tt1.requestid,\n" +
                 "\tt1.requestnamenew,\n" +
+                "  t1.creater,\n" +
                 "  t2.receivedate || ' ' || t2.receivetime pjDate \n" +
+                //"  t2.receivedate + t2.receivetime pjDate \n" +
                 "FROM\n" +
                 "\tworkflow_requestbase t1,\n" +
                 "\tworkflow_currentoperator t2 \n" +
@@ -99,6 +101,7 @@
         JSONObject jsonObjectAll = new JSONObject();
         JSONArray jsonArray = new JSONArray();
         String oaUrl = "";
+        RecordSet hrmSet = new RecordSet();
         int allCount = 0;
         while (rs.next()) {
             if (allCount > defaultInt) {
@@ -108,8 +111,9 @@
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("requestId", rs.getString("requestid"));
             jsonObject.put("requestName", rs.getString("requestnamenew"));
-            jsonObject.put("depName", depName);
-            jsonObject.put("personName", lastName);
+            String[] creaters = hrmInfo(hrmSet, rs.getString("creater"));
+            jsonObject.put("personName", creaters[0]); //创建者姓名
+            jsonObject.put("depName", creaters[1]); // 创建者部门
             jsonObject.put("receiveDate", rs.getString("pjDate"));
             jsonObject.put("openUrl", oaUrl);
             jsonObject.put("fromSys", "OA");
@@ -133,3 +137,14 @@
     }
 %>
 
+<%!
+    private String[] hrmInfo(RecordSet recordSet, String hrmId) {
+        String[] returnInfo = new String[2];
+        recordSet.executeQuery("select h.lastname, d.departmentname from hrmresource h left join HrmDepartment d on h.departmentid = d.id where h.id = " + hrmId);
+        recordSet.next();
+
+        returnInfo[0] = recordSet.getString("lastname");
+        returnInfo[1] = recordSet.getString("departmentname");
+        return returnInfo;
+    }
+%>
