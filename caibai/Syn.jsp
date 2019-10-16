@@ -14,7 +14,6 @@
         <wea:item>选择同步范围</wea:item>
         <wea:item>
             <select id="tongBu">
-                <option value=""></option>
                 <option value="1">人员同步</option>
             </select>
         </wea:item>
@@ -29,7 +28,6 @@
     </wea:group>
 
 </wea:layout>
-<%--<textarea style="margin-left: 200px; width: 600px; height: 50px"></textarea>--%>
 
 <script type="text/javascript">
 
@@ -43,11 +41,10 @@
             timeout: 1000,
             data: {"myType": myType},
             success: function (data) {
-                var data = data.replace(/\s+/g, "");
-                window.top.Dialog.alert(data);
+
             },
             complete: function (XMLHttpRequest, status) {
-                window.top.Dialog.alert("后台同步中。。。");
+                window.top.Dialog.alert("后台同步中...");
             }
         });
     }
