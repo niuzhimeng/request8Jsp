@@ -97,6 +97,7 @@
     }
 
     private String sendPost(String url, String ea, String code) {
+        BaseBean baseBean = new BaseBean();
         BufferedReader reader = null;
         StringBuilder response = new StringBuilder();
         try {
@@ -107,13 +108,14 @@
             conn.setUseCaches(false);//设置不要缓存
             conn.setInstanceFollowRedirects(true);
             conn.setDoOutput(true);
+            conn.setConnectTimeout(9000);
+            conn.setReadTimeout(9000);
             conn.setDoInput(true);
             conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
 
             DataOutputStream out = new DataOutputStream(conn.getOutputStream());
             String content = "ea=" + URLEncoder.encode(ea, "UTF-8");
             content += "&code=" + URLEncoder.encode(code, "UTF-8");
-            ;
 
             out.writeBytes(content);
 
@@ -131,7 +133,7 @@
             // 断开连接
             conn.disconnect();
         } catch (Exception e) {
-            e.printStackTrace();
+            baseBean.writeLog("佳杰点单sendPost异常： " + e);
         } finally {
             try {
                 if (reader != null) {
