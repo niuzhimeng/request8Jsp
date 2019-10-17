@@ -1,4 +1,6 @@
 <%@ page import="weaver.general.BaseBean" %>
+<%@ page import="org.apache.commons.codec.binary.Base64" %>
+<%@ include file="/systeminfo/init_wev8.jsp" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" %>
 
 <%
@@ -16,7 +18,7 @@
         String myData = "{\"appSecId\":\"" + appSecId + "\",\"userId\":\"" + userId + "\",\"enterpriseId\":\"" + enterpriseId + "\"}";
         baseBean.writeLog("myData=========== " + myData);
 
-        String baseData = java.util.Base64.getEncoder().encodeToString(myData.getBytes());
+        String baseData = new Base64().encodeToString(myData.getBytes());
         baseBean.writeLog("baseData===========" + baseData);
 
         String sendUrl = getInvoiceUrl + baseData;
