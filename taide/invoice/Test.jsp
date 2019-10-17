@@ -21,7 +21,7 @@
     BaseBean baseBean = new BaseBean();
     try {
         baseBean.writeLog("获取发票信息开始========================");
-        Base64 apacheBase64 = new Base64();
+        Base64 base64 = new Base64();
 
         JSONObject dataObject = new JSONObject(true);
         dataObject.put("enterpriseId", enterpriseId);
@@ -40,7 +40,7 @@
         String srcStr = "POST/rest/openApi/invoice/dii?" +
                 "authorize={\"appSecId\":\"" + appSecId + "\"}" +
                 "&globalInfo={\"appId\":\"" + appId + "\",\"version\":\"v1.0\",\"interfaceCode\":\"INVOICE_LIST_QUERY\",\"enterpriseCode\":\"null\"}" +
-                "&data=" + Base64.encodeBase64String(myDataStr.getBytes(StandardCharsets.UTF_8));
+                "&data=" + new String(base64.encode(myDataStr.getBytes()), StandardCharsets.UTF_8);
         baseBean.writeLog("srcStr1: " + srcStr);
 
         SecretKeySpec keySpec = new SecretKeySpec(appSecKey.getBytes(StandardCharsets.UTF_8), "HmacSHA1");
@@ -50,7 +50,8 @@
 
         baseBean.writeLog("signBytes: " + new String(signBytes), "UTF-8");
 
-        String appSec = Base64.encodeBase64String(signBytes);
+        // String appSec = Base64.encodeBase64String(signBytes);
+        String appSec = new String(base64.encode(signBytes), StandardCharsets.UTF_8);
 
         baseBean.writeLog("appSec======================= " + appSec);
 
