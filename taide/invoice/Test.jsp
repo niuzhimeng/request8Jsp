@@ -1,6 +1,8 @@
+<%@ page import="com.alibaba.fastjson.JSONArray" %>
 <%@ page import="com.alibaba.fastjson.JSONObject" %>
 <%@ page import="com.weavernorth.taide.util.TaiDeOkHttpUtils" %>
 <%@ page import="org.apache.commons.codec.binary.Base64" %>
+<%@ page import="weaver.conn.RecordSet" %>
 <%@ page import="weaver.general.BaseBean" %>
 <%@ page import="javax.crypto.Mac" %>
 <%@ page import="javax.crypto.spec.SecretKeySpec" %>
@@ -17,7 +19,7 @@
     String appId = "BXSDK";
     String userId = "1111";
     String enterpriseId = "000001";
-
+    RecordSet recordSet = new RecordSet();
     BaseBean baseBean = new BaseBean();
     try {
         baseBean.writeLog("获取发票信息开始========================");
@@ -68,11 +70,108 @@
 
         baseBean.writeLog("发送param： " + paramObject.toJSONString());
 
+        // 调用接口
         String returnInvoice = TaiDeOkHttpUtils.post(getInvoiceUrl, paramObject.toJSONString());
-        out.clear();
-        out.print("发票返回： " + returnInvoice);
+        JSONObject returnObject = JSONObject.parseObject(returnInvoice);
+        JSONObject returnInfo = returnObject.getJSONObject("returnInfo");
+        if (!"0000".equals(returnInfo.getString("returnCode"))) {
+            baseBean.writeLog("获取发票信息错误： " + returnObject.toJSONString());
+        }
+
+        JSONArray invoiceArray = returnObject.getJSONArray("invoice");
+
+        // 删除旧信息
+        recordSet.executeUpdate("delete from uf_fpinfo where userId = '" + userId + "' and enterpriseId = '" + enterpriseId + "'");
+        recordSet.executeUpdate("delete from uf_fpseinfo where userId = '" + userId + "' and enterpriseId = '" + enterpriseId + "'");
+
+        // 插入新的发票信息
+        insert(invoiceArray, userId, enterpriseId);
+
     } catch (Exception e) {
         baseBean.writeLog("发票接口异常： " + e);
     }
 
+%>
+
+<%!
+    private void insert(JSONArray invoiceArray, String userId, String enterpriseId) {
+        RecordSet mainSet = new RecordSet();
+        RecordSet detailSet = new RecordSet();
+        BaseBean baseBean = new BaseBean();
+        try {
+            String insertSql = "insert into uf_fpinfo(uuid, invoiceTypeCode, invoiceCode, invoiceNo, invoiceDate, " +
+                    "totalAmount,invoiceAmount,taxAmount,isCanceled,reimburseState, " +
+                    "checkState, isDeductible, inputtaxamount, reimburseamount, userId, " +
+                    "enterpriseId, salerName, buyerName) " +
+                    "values (?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?, ?,?,?)";
+
+            String insertDetailSql = "insert into uf_fpseinfo(uuid, goodsName, model, unit, invoiceNo, " +
+                    "invoiceCode,unitPrice,noTaxAmount,taxRate,taxAmount, " +
+                    "detailNo, expenseItem, plateNo, type, trafficDateStart, " +
+                    "trafficDateEnd, reimbursedetailamount, userId, enterpriseId)" +
+                    "values (?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?, ?,?,?,?)";
+            int size = invoiceArray.size();
+            baseBean.writeLog("返回发票总数： " + size);
+            for (int i = 0; i < size; i++) {
+                String uuid = invoiceArray.getJSONObject(i).getString("uuid");
+                mainSet.executeUpdate(insertSql,
+                        uuid,
+                        invoiceArray.getJSONObject(i).getString("invoiceTypeCode"),
+                        invoiceArray.getJSONObject(i).getString("invoiceCode"),
+                        invoiceArray.getJSONObject(i).getString("invoiceNo"),
+                        invoiceArray.getJSONObject(i).getString("invoiceDate"),
+
+                        invoiceArray.getJSONObject(i).getString("totalAmount"),
+                        invoiceArray.getJSONObject(i).getString("invoiceAmount"),
+                        invoiceArray.getJSONObject(i).getString("taxAmount"),
+                        invoiceArray.getJSONObject(i).getString("isCanceled"),
+                        invoiceArray.getJSONObject(i).getString("reimburseState"),
+
+                        invoiceArray.getJSONObject(i).getString("checkState"),
+                        invoiceArray.getJSONObject(i).getString("isDeductible"),
+                        invoiceArray.getJSONObject(i).getString("inputtaxamount"),
+                        invoiceArray.getJSONObject(i).getString("reimburseamount"),
+                        userId,
+
+                        enterpriseId,
+                        invoiceArray.getJSONObject(i).getString("salerName"),
+                        invoiceArray.getJSONObject(i).getString("buyerName")
+                );
+                // 插入明细
+                JSONArray detailList = invoiceArray.getJSONObject(i).getJSONArray("detailList");
+                if (detailList == null) {
+                    continue;
+                } else {
+                    for (int j = 0; j < detailList.size(); j++) {
+                        detailSet.executeUpdate(insertDetailSql,
+                                uuid,
+                                detailList.getJSONObject(j).getString("goodsName"),
+                                detailList.getJSONObject(j).getString("model"),
+                                detailList.getJSONObject(j).getString("unit"),
+                                detailList.getJSONObject(j).getString("invoiceNo"),
+
+                                detailList.getJSONObject(j).getString("invoiceCode"),
+                                detailList.getJSONObject(j).getString("unitPrice"),
+                                detailList.getJSONObject(j).getString("noTaxAmount"),
+                                detailList.getJSONObject(j).getString("taxRate"),
+                                detailList.getJSONObject(j).getString("taxAmount"),
+
+                                detailList.getJSONObject(j).getString("detailNo"),
+                                detailList.getJSONObject(j).getString("expenseItem"),
+                                detailList.getJSONObject(j).getString("plateNo"),
+                                detailList.getJSONObject(j).getString("type"),
+                                detailList.getJSONObject(j).getString("trafficDateStart"),
+
+                                detailList.getJSONObject(j).getString("trafficDateEnd"),
+                                detailList.getJSONObject(j).getString("reimbursedetailamount"),
+                                userId,
+                                enterpriseId
+                        );
+                    }
+                }
+            }
+        } catch (Exception e) {
+            baseBean.writeLog("插入发票信息异常： " + e);
+        }
+    }
 %>
