@@ -48,38 +48,27 @@
         mac.init(keySpec);
         byte[] signBytes = mac.doFinal(srcStr.getBytes(StandardCharsets.UTF_8));
 
-        baseBean.writeLog("signBytes: " + new String(signBytes), "UTF-8");
-
-        // String appSec = Base64.encodeBase64String(signBytes);
         String appSec = new String(base64.encode(signBytes), StandardCharsets.UTF_8);
-
         baseBean.writeLog("appSec======================= " + appSec);
 
-        JSONObject paramObject = new JSONObject();
+        JSONObject paramObject = new JSONObject(true);
 
-//        JSONObject authorizeObject = new JSONObject();
-//        authorizeObject.put("appSecId", appSecId);
-//        authorizeObject.put("appSec", appSec);
-//        paramObject.put("authorize", authorizeObject);
-//
-//        JSONObject globalInfoObject = new JSONObject();
-//        globalInfoObject.put("appId", appId);
-//        globalInfoObject.put("version", "v1.0");
-//        globalInfoObject.put("interfaceCode", "INVOICE_LIST_QUERY");
-//        globalInfoObject.put("enterpriseCode", "");
-//        paramObject.put("globalInfo", globalInfoObject);
-//
-//        paramObject.put("data", dataObject);
-//
-//        baseBean.writeLog("发送param： " + paramObject.toJSONString());
+        JSONObject authorizeObject = new JSONObject(true);
+        authorizeObject.put("appSecId", appSecId);
+        authorizeObject.put("appSec", appSec);
+        paramObject.put("authorize", authorizeObject);
 
-        String param = "{\"authorize\":{\"appSecId\":\"d4bf814c02abb801a2a2b6742a6d140a\"," +
-                "\"appSec\":\"" + appSec + "\"},\"globalInfo\":{\"appId\":\"BXSDK\",\"version\": \"v1.0\"," +
-                "\"interfaceCode\": \"INVOICE_LIST_QUERY\"},\"data\":{\"enterpriseId\": \"000001\",\"userId\":\"1111\"," +
-                "\"invoiceTime\":\"\",\"reimburseState\":\"0\",\"invoiceTypeCode\":\"\"," +
-                "\"page\":\"\",\"rows\": \"\"}}";
+        JSONObject globalInfoObject = new JSONObject(true);
+        globalInfoObject.put("appId", appId);
+        globalInfoObject.put("version", "v1.0");
+        globalInfoObject.put("interfaceCode", "INVOICE_LIST_QUERY");
+        paramObject.put("globalInfo", globalInfoObject);
 
-        String returnInvoice = TaiDeOkHttpUtils.post(getInvoiceUrl, param);
+        paramObject.put("data", dataObject);
+
+        baseBean.writeLog("发送param： " + paramObject.toJSONString());
+
+        String returnInvoice = TaiDeOkHttpUtils.post(getInvoiceUrl, paramObject.toJSONString());
         out.clear();
         out.print("发票返回： " + returnInvoice);
     } catch (Exception e) {
