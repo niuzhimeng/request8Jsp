@@ -192,13 +192,11 @@
 <script type="text/javascript">
     // 发票号
     var fph = 'field75155';
-    // 明细表1
-    var mxbNum1 = 'submitdtlid0';
     // 明细表2
     var mxbNum2 = 'submitdtlid1';
 
     // 发票日期
-    var fprq = 'field75148';
+    var fprq = 'field89648';
 
     var myReg = new RegExp("^\\d*$");
 
@@ -252,7 +250,7 @@
     // 日期校验
     function rcDateCheck(beforeThreeDate) {
         var flag = true;
-        var nums = $("#" + mxbNum1).val().split(',');
+        var nums = $("#" + mxbNum2).val().split(',');
         for (var i = 0; i < nums.length; i++) {
             var fprqVal = $("#" + fprq + '_' + nums[i]).val();
             if (fprqVal === '') {
