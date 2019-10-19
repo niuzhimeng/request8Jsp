@@ -2,49 +2,54 @@
 <%@ page import="weaver.conn.RecordSet" %>
 <%@ page import="javax.crypto.Cipher" %>
 <%@ page import="javax.crypto.spec.SecretKeySpec" %>
-<%@ page import="java.io.*" %>
+<%@ page import="java.io.BufferedReader" %>
+<%@ page import="java.io.DataOutputStream" %>
+<%@ page import="java.io.IOException" %>
+<%@ page import="java.io.InputStreamReader" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" %>
 <%@ include file="/systeminfo/init_wev8.jsp" %>
 
 <%
     // 分享销客单点登录
     BaseBean baseBean = new BaseBean();
+    RecordSet recordSet = new RecordSet();
     baseBean.writeLog("单点纷享销客Start===========================");
-    String endUrl = "";
+    String endUrl;
     try {
-        // 测试地址
-        String testUrl = "http://sso.ceshi113.com/sign/redirect";
-        // 正式地址
-        String formalUrl = "http://sso.fxiaoke.com/sign/redirect";
+        // 查询单点配置信息
+        Map<String, String> ssoInfoMap = new HashMap<String, String>();
+        recordSet.executeQuery("select * from uf_sso_info");
+        while (recordSet.next()) {
+            ssoInfoMap.put(recordSet.getString("ssokey").trim(), recordSet.getString("ssovalue").trim());
+        }
+        String xkUrl = ssoInfoMap.get("xkUrl");
+        String xkea = ssoInfoMap.get("xkea");
+        String xkappId = ssoInfoMap.get("xkappId");
+        String xkskey = ssoInfoMap.get("xkskey");
 
-        String ea = "61126";
-        String appId = "FSAID_1314644";
-        String skey = "fo5$VJ3zEa#Zb&yM";
         long timeStamp = System.currentTimeMillis();
-
         int uid = user.getUID();
         // 手机号
         String mobile = "";
-        RecordSet recordSet = new RecordSet();
         recordSet.executeQuery("select mobile from hrmresource where id = " + uid);
         if (recordSet.next()) {
             mobile = recordSet.getString("mobile");
         }
         baseBean.writeLog("当前人手机号==== " + mobile);
 
-        String sign = encryptComm(timeStamp + mobile + appId, skey);
+        String sign = encryptComm(timeStamp + mobile + xkappId, xkskey);
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("timeStamp", timeStamp);
         jsonObject.put("account", mobile);
-        jsonObject.put("appId", appId);
+        jsonObject.put("appId", xkappId);
         jsonObject.put("sign", sign);
 
         String codeStr = jsonObject.toJSONString();
 
-        endUrl = testUrl + "?ea=" + ea + "&code=" + codeStr;
+        endUrl = xkUrl + "?ea=" + xkea + "&code=" + codeStr;
 
         baseBean.writeLog("销客跳转地址： " + endUrl);
-        String returnJson = sendPost(testUrl, ea, codeStr);
+        String returnJson = sendPost(xkUrl, xkea, codeStr);
         baseBean.writeLog("post请求返回： " + returnJson);
 
         JSONObject returnObject = JSONObject.parseObject(returnJson);
