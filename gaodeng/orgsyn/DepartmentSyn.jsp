@@ -149,8 +149,11 @@
             baseBean.writeLog("更新部门数： " + updateHrmDepartments.size());
             updateHrmDepartment(updateHrmDepartments);
 
+            // 清空部门缓存
             new DepartmentComInfo().removeCompanyCache();
 
+            // 清空map缓存
+            clearMap(numIdMap, idSubIdMap, subIdMap);
         }
         return errorHrmDepartments;
     }
@@ -219,4 +222,13 @@
         }
         return new String(stringBuilder).replaceAll("\\s*", "");
     }
+
+    private void clearMap(Map... maps) {
+        for (Map map : maps) {
+            if (map != null) {
+                map.clear();
+            }
+        }
+    }
+
 %>
