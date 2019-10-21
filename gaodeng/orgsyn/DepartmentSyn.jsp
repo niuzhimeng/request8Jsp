@@ -35,11 +35,24 @@
             baseBean.writeLog("待插入部门数量： " + departmentErrorCount);
         }
 
+        // 清空部门缓存
+        new DepartmentComInfo().removeCompanyCache();
+
         // 结束时间戳
         long end = System.currentTimeMillis();
         long cha = (end - start) / 1000;
 
         String logStr = "部门信息同步完成，同步数量： " + allCount + ", 耗时：" + cha + " 秒。";
+        JSONObject jsonObjectAll = new JSONObject(true);
+        jsonObjectAll.put("AllCount", allCount);
+        jsonObjectAll.put("errorCount", departmentList.size());
+        jsonObjectAll.put("errList", departmentList);
+
+        baseBean.writeLog("返回的xml： " + jsonObjectAll.toJSONString());
+
+        response.setHeader("Content-Type", "application/json;charset=UTF-8");
+        out.clear();
+        out.print(jsonObjectAll.toJSONString());
         // 插入日志
         //GdConnUtil.insertTimedLog("HrmDepartment", logStr, allCount);
     } catch (Exception e) {
@@ -104,14 +117,20 @@
 
             if ("".equals(depcode)) {
                 baseBean.writeLog("部门编码为空，上级编码： " + supsubcode + "部门名称： " + department.getDepname());
+                department.setErrMessage("部门编码为空，上级编码： " + supsubcode + "部门名称： " + department.getDepname());
+                errorHrmDepartments.add(department);
                 continue;
             }
             if ("".equals(supsubcode)) {
                 baseBean.writeLog("部门编上级编码为空，部门编码： " + depcode + "部门名称： " + department.getDepname());
+                department.setErrMessage("部门编上级编码为空，部门编码： " + depcode + "部门名称： " + department.getDepname());
+                errorHrmDepartments.add(department);
                 continue;
             }
             if ("".equals(department.getDepname())) {
                 baseBean.writeLog("部门名称为空，部门编码： " + depcode + "上级编码： " + supsubcode);
+                department.setErrMessage("部门名称为空，部门编码： " + depcode + "上级编码： " + supsubcode);
+                errorHrmDepartments.add(department);
                 continue;
             }
 
@@ -126,6 +145,9 @@
                 if (subDepId <= 0) {
                     if (count >= 3) {
                         baseBean.writeLog("上级部门不存在，部门编码： " + depcode + ", 上级编码： " + supsubcode + "部门名称： " + department.getDepname());
+                        department.setErrMessage("上级部门不存在，部门编码： " + depcode + ", 上级编码： " + supsubcode + "部门名称： " + department.getDepname());
+                        errorHrmDepartments.add(department);
+                        continue;
                     }
                     errorHrmDepartments.add(department);
                     continue;
@@ -148,9 +170,6 @@
 
             baseBean.writeLog("更新部门数： " + updateHrmDepartments.size());
             updateHrmDepartment(updateHrmDepartments);
-
-            // 清空部门缓存
-            new DepartmentComInfo().removeCompanyCache();
 
             // 清空map缓存
             clearMap(numIdMap, idSubIdMap, subIdMap);
