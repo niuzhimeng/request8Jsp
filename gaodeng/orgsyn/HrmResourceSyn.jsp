@@ -1,7 +1,6 @@
 <%@ page import="com.alibaba.fastjson.JSONArray" %>
 <%@ page import="com.alibaba.fastjson.JSONObject" %>
 <%@ page import="com.weavernorth.gaodeng.orgsyn.vo.GdHrmResource" %>
-<%@ page import="com.weavernorth.gaodeng.util.GdUtils" %>
 <%@ page import="weaver.conn.ConnStatement" %>
 <%@ page import="weaver.conn.RecordSet" %>
 <%@ page import="weaver.general.BaseBean" %>
@@ -15,6 +14,10 @@
 <%@ page import="java.util.Map" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" %>
 <%
+
+    // 老师岗位id
+    String teacherId = "63";
+
     BaseBean baseBean = new BaseBean();
     // 人员同步
     baseBean.writeLog("人员同步 Start ========================= " + TimeUtil.getCurrentTimeString());
@@ -24,9 +27,24 @@
         JSONArray jsonArray = JSONObject.parseArray(json);
         int allCount = jsonArray.size();
         baseBean.writeLog("接收人员数量: " + allCount);
-        List<GdHrmResource> departmentList = jsonArray.toJavaList(GdHrmResource.class);
-        synHrmResource(departmentList);
+        List<GdHrmResource> HrmResourceList = jsonArray.toJavaList(GdHrmResource.class);
+
+        // 错误人员数据信息
+        List<GdHrmResource> errHrmResourceList = synHrmResource(HrmResourceList, teacherId);
+
+        JSONObject jsonObjectAll = new JSONObject(true);
+        jsonObjectAll.put("AllCount", allCount);
+        jsonObjectAll.put("errorCount", errHrmResourceList.size());
+        jsonObjectAll.put("errList", errHrmResourceList);
+
+        baseBean.writeLog("返回的xml： " + jsonObjectAll.toJSONString());
         baseBean.writeLog("人员同步 END ========================= ");
+
+        response.setHeader("Content-Type", "application/json;charset=UTF-8");
+        out.clear();
+        out.print(jsonObjectAll.toJSONString());
+
+
     } catch (Exception e) {
         baseBean.writeLog("人员同步异常： " + e);
     }
@@ -35,10 +53,8 @@
 
 <%!
 
-    private void synHrmResource(List<GdHrmResource> resourceList) {
-        // 老师岗位id
-        String teacherId = "719";
-
+    private List<GdHrmResource> synHrmResource(List<GdHrmResource> resourceList, String teacherId) {
+        List<GdHrmResource> errHrmResourceList = new ArrayList<GdHrmResource>();
         BaseBean baseBean = new BaseBean();
         try {
             // departmentCode - id map
@@ -107,12 +123,23 @@
 
                 if ("".equals(loginId)) {
                     // 登录名为空
-                    baseBean.writeLog("人员登录名为空，部门code： " + depCode + " ,人员编码： " + hrmResource.getWorkcode() + ", 姓名： " + hrmResource.getLastname());
+                    baseBean.writeLog("人员【登录名】为空，部门code： " + depCode + " ,人员编码： " + hrmResource.getWorkcode() + ", 姓名： " + hrmResource.getLastname());
+                    hrmResource.setErrMessage("人员【登录名】为空，部门code： " + depCode + " ,人员编码： " + hrmResource.getWorkcode() + ", 姓名： " + hrmResource.getLastname());
+                    errHrmResourceList.add(hrmResource);
+                    continue;
+                }
+                if ("".equals(Util.null2String(hrmResource.getLastname()).trim())) {
+                    // 姓名为空
+                    baseBean.writeLog("人员【姓名】为空，部门code： " + depCode + " , 登录名： " + loginId + ", 姓名： " + hrmResource.getLastname());
+                    hrmResource.setErrMessage("人员【姓名】为空，部门code： " + depCode + " ,登录名： " + loginId + ", 姓名： " + hrmResource.getLastname());
+                    errHrmResourceList.add(hrmResource);
                     continue;
                 }
                 if (depId <= 0) {
                     //所属部门不存在
-                    baseBean.writeLog("人员所属部门不存在，部门code： " + depCode + " ,人员编码： " + hrmResource.getWorkcode() + ", 姓名： " + hrmResource.getLastname());
+                    baseBean.writeLog("人员所属【部门】不存在，部门code： " + depCode + " ,登录名： " + loginId + ", 姓名： " + hrmResource.getLastname());
+                    hrmResource.setErrMessage("人员所属【部门】不存在，部门code： " + depCode + " ,登录名： " + loginId + ", 姓名： " + hrmResource.getLastname());
+                    errHrmResourceList.add(hrmResource);
                     continue;
                 }
 
@@ -136,7 +163,7 @@
                 hrmResource.setSeclevel("10");
 
                 if (!loginIdList.contains(loginId)) {
-                    String newId = String.valueOf(GdUtils.getHrmMaxid());
+                    String newId = String.valueOf(getHrmMaxId());
                     hrmResource.setId(newId);
                     insertHrmResource.add(hrmResource);
                     loginIdList.add(loginId);
@@ -159,7 +186,21 @@
         } catch (Exception e) {
             baseBean.writeLog("人员同步synHrmResource异常： " + e);
         }
+        return errHrmResourceList;
+    }
 
+    private int getHrmMaxId() {
+        int maxID = 1;
+        RecordSet rs = new RecordSet();
+        try {
+            rs.executeProc("HrmResourceMaxId_Get", "");
+            if (rs.next()) {
+                maxID = rs.getInt(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return maxID;
     }
 
     private void insertHrmResource(List<GdHrmResource> insertHrmResourceList) {
@@ -202,7 +243,6 @@
                 statement.setString(19, hrmResource.getSystemlanguage());
 
                 statement.executeUpdate();
-                //hrmResource.updaterights(hrmResource.getId());
                 stnCount++;
             }
         } catch (Exception e) {
@@ -217,8 +257,7 @@
         ConnStatement statement = new ConnStatement();
         try {
             String sql = "update hrmresource set lastname = ?, status = ?, sex = ?, locationid = ?, mobile = ?, " +
-                    "departmentid = ?, subcompanyid1 = ?, dsporder = ?,  email = ?, workcode = ? " +
-                    "where loginid = ?";
+                    "departmentid = ?, subcompanyid1 = ?, email = ?, workcode = ? where loginid = ?";
             statement.setStatementSql(sql);
             int stnCount = 0;
             for (GdHrmResource hrmResource : updateHrmResourceList) {
@@ -235,11 +274,9 @@
 
                 statement.setString(6, hrmResource.getDepId());
                 statement.setString(7, hrmResource.getSubId());
-                statement.setString(8, hrmResource.getDsporder());
-                statement.setString(9, hrmResource.getEmail());
-                statement.setString(10, hrmResource.getWorkcode());
-
-                statement.setString(11, hrmResource.getLoginid());
+                statement.setString(8, hrmResource.getEmail());
+                statement.setString(9, hrmResource.getWorkcode());
+                statement.setString(10, hrmResource.getLoginid());
 
                 statement.executeUpdate();
                 stnCount++;
