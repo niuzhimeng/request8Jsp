@@ -104,10 +104,10 @@
                 // 查询明细数据
                 baseBean.writeLog("recordSet.getString(\"isDeductible\"): " + recordSet.getString("isDeductible"));
                 if ("Y".equalsIgnoreCase(recordSet.getString("isDeductible"))) {
-                    detailSet.executeQuery("select uuid, invoiceNo, noTaxAmount from uf_fpseinfo where uuid = '" + recordSet.getString("uuid") + "'");
+                    detailSet.executeQuery("select id, uuid, invoiceNo, noTaxAmount from uf_fpseinfo where uuid = '" + recordSet.getString("uuid") + "'");
                     while (detailSet.next()) {
                         JSONObject xmObject = new JSONObject();
-                        xmObject.put("uuid", detailSet.getString("uuid"));
+                        xmObject.put("uuid", detailSet.getString("id"));
                         xmObject.put("invoiceNo", detailSet.getString("invoiceNo"));
                         xmObject.put("noTaxAmount", detailSet.getString("noTaxAmount"));
                         arrays.add(xmObject);

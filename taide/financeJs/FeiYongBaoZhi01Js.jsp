@@ -3,6 +3,12 @@
     document.write(nzmjs);
 </script>
 
+<script type="text/javascript">
+    $(function () {
+        var name = '<span class="e8_showNameClass"><a href="javaScript:openhrm(150);" onclick="pointerXY(event);">李妍</a>&nbsp;<span class="e8_delClass" id="150" onclick="del(event,this,1,false,{});" style="opacity: 1; visibility: hidden;">&nbsp;x&nbsp;</span></span>';
+        __browserNamespace__._writeBackData('field6659', 1, {id: '150', name: name})
+    })
+</script>
 
 <script src="/workflow/request/testJsp/cw.js"></script>
 <script type="text/javascript">
@@ -16,6 +22,7 @@
     var bhsjemx = 'field12160'; // 不含税金额
     var mxbNum4 = 'submitdtlid3';
     $(function () {
+        appendFpButton();
         _C.run2(fpzd, addCount01);
     });
 
@@ -70,7 +77,7 @@
                     }
                     let currentMxs = mxbObj.val().split(",");
                     for (let i = 0; i < length; i++) {
-                        $("#" + fpid + '_' + currentMxs[currentRows]).val(myJsonArray[i].uuid);
+                        $("#" + fpid + '_' + currentMxs[currentRows]).val(myJsonArray[i].uuid + p.r);
                         $("#" + fph + '_' + currentMxs[currentRows]).val(myJsonArray[i].invoiceNo);
                         $("#" + bhsjemx + '_' + currentMxs[currentRows]).val(myJsonArray[i].noTaxAmount);
                         currentRows++;
@@ -98,6 +105,10 @@
             let newSz = newVal.split(',');
             let oldSz = oldVal.split(',');
             bhVal = diff(newSz, oldSz);
+            for (let i = 0; i < bhVal.length; i++) {
+                bhVal[i] = bhVal[i] + p.r;
+            }
+
             var mxbObj = $("#" + mxbNum4).val().split(",");
             let length1 = mxbObj.length;
             // 删除
@@ -114,7 +125,10 @@
             });
             deleteRow3(3, true);
         }
-        calSum(0);
+        setTimeout(function () {
+            alert('123')
+            calSum(0);
+        }, 1000);
     }
 
     /**
@@ -141,5 +155,23 @@
             }
         }
         return arr.concat(arr1);
+    }
+
+    function appendFpButton() {
+        jQuery("#getFpInfo").append("<input id=\"jiaoYan\" type=\"button\" value=\"获取发票\" onclick=\"newButton();\" class=\"e8_btn_top_first\">");
+    }
+
+    function newButton() {
+        $.ajax({
+            type: "post",
+            url: "/workflow/request/taide/invoice/Test.jsp",
+            cache: false,
+            async: false,
+            data: {"userId": ""},
+            success: function (myData) {
+                window.top.Dialog.alert('获取发票信息成功。');
+            }
+        });
+
     }
 </script>
