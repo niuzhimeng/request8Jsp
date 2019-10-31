@@ -1,5 +1,6 @@
 <%@ page import="com.alibaba.fastjson.JSONArray" %>
 <%@ page import="com.alibaba.fastjson.JSONObject" %>
+<%@ page import="com.weavernorth.taide.invoice.ConfigInfo" %>
 <%@ page import="com.weavernorth.taide.util.TaiDeOkHttpUtils" %>
 <%@ page import="org.apache.commons.codec.binary.Base64" %>
 <%@ page import="weaver.conn.RecordSet" %>
@@ -11,12 +12,12 @@
 
 <%
     // 获取发票信息url
-    String getInvoiceUrl = "http://101.124.7.184:8051/rest/openApi/invoice/dii";
+    String getInvoiceUrl = ConfigInfo.InvoiceUrl.getValue();
 
     // 授权id
-    String appSecId = "d4bf814c02abb801a2a2b6742a6d140a";
-    String appSecKey = "116837c1750110f87f285feb2148ad2c";
-    String appId = "BXSDK";
+    String appSecId = ConfigInfo.appSecId.getValue();
+    String appSecKey = ConfigInfo.appSecKey.getValue();
+    String appId = ConfigInfo.appId.getValue();
     String userId = "1111";
     String enterpriseId = "000001";
     RecordSet recordSet = new RecordSet();

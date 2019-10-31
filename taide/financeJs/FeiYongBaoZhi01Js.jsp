@@ -1,15 +1,3 @@
-<script type="text/javascript">
-    var nzmjs = '<script src="/workflow/request/taide/financeJs/FinanceAdd.js?v=' + new Date().getTime() + '"<\/script>';
-    document.write(nzmjs);
-</script>
-
-<script type="text/javascript">
-    $(function () {
-        var name = '<span class="e8_showNameClass"><a href="javaScript:openhrm(150);" onclick="pointerXY(event);">李妍</a>&nbsp;<span class="e8_delClass" id="150" onclick="del(event,this,1,false,{});" style="opacity: 1; visibility: hidden;">&nbsp;x&nbsp;</span></span>';
-        __browserNamespace__._writeBackData('field6659', 1, {id: '150', name: name})
-    })
-</script>
-
 <script src="/workflow/request/testJsp/cw.js"></script>
 <script type="text/javascript">
     var fpzd = 'field15419'; // 发票字段
@@ -56,7 +44,7 @@
                     // 不含税金额合计
                     var allMoney = myJson.allMoney;
                     $("#" + bhsje + p.r).val(allMoney);
-
+                    $("#" + bhsje + p.r).trigger('change');
                     // 明细行数组
                     var myJsonArray = myJson.arrays;
                     // 新增行数
@@ -98,6 +86,7 @@
                     // 不含税金额合计
                     var allMoney = myJson.allMoney;
                     $("#" + bhsje + p.r).val(allMoney);
+                    $("#" + bhsje + p.r).trigger('change');
                 }
             });
 
@@ -125,10 +114,6 @@
             });
             deleteRow3(3, true);
         }
-        setTimeout(function () {
-            alert('123')
-            calSum(0);
-        }, 1000);
     }
 
     /**
@@ -162,6 +147,9 @@
     }
 
     function newButton() {
+        let queryBut = jQuery("#jiaoYan");
+        queryBut.attr("disabled", true);
+        queryBut.val('请勿重复点击');
         $.ajax({
             type: "post",
             url: "/workflow/request/taide/invoice/Test.jsp",
@@ -173,5 +161,12 @@
             }
         });
 
+        setTimeout('buttonTrue()', 10000);
+    }
+
+    function buttonTrue() {
+        let queryBut = jQuery("#jiaoYan");
+        queryBut.attr("disabled", false);
+        queryBut.val('获取发票');
     }
 </script>
