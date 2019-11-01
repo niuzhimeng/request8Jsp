@@ -243,6 +243,7 @@
                 statement.setString(19, hrmResource.getSystemlanguage());
 
                 statement.executeUpdate();
+                hrmResource.updaterights(hrmResource.getId());
                 stnCount++;
             }
         } catch (Exception e) {
