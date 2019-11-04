@@ -7,7 +7,7 @@
 <%@ include file="/systeminfo/init_wev8.jsp" %>
 <%
     // 研发ip
-    String ip = "10.1.10.107";
+    String ip = "plm.tidepharm.com";
     String appKey = "C0218";
     String appSecret = "oUHEeSeSm8LR20zaiVt9A";
     BaseBean baseBean = new BaseBean();
