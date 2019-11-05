@@ -8,28 +8,57 @@
     var fpid = 'field15430'; // 发票id
     var fph = 'field12157'; // 发票号
     var bhsjemx = 'field12160'; // 不含税金额
-    var mxbNum4 = 'submitdtlid3';
+    var mxbNum1 = 'submitdtlid0'; // 明细表1（主）
+    var mxbNum4 = 'submitdtlid3'; // 明细表4（次）
     $(function () {
         appendFpButton();
         _C.run2(fpzd, addCount01);
+        _C.run2(mxbNum1, deleteLine);
     });
+
+    function deleteLine(p) {
+        if (p.v.o === undefined) {
+            return;
+        }
+        var oldVal = p.v.o;
+        var newVal = p.v.n;
+        var bhVal;
+        if (newVal.length < oldVal.length) {
+            let newSz = newVal.split(',');
+            let oldSz = oldVal.split(',');
+            bhVal = diff(newSz, oldSz);
+            var mxbObj = $("#" + mxbNum4).val().split(",");
+            let length1 = mxbObj.length;
+            // 删除
+            var delIndex = [];
+            for (var i = 0; i < length1; i++) {
+                var fphz = $("#" + fpid + '_' + mxbObj[i]).val().split('_');
+                if (bhVal.indexOf(fphz[1]) !== -1) {
+                    delIndex.push(mxbObj[i]);
+                }
+            }
+            $("input[name='check_node_3']").each(function () {
+                if (delIndex.contains($(this).val())) {
+                    $(this).attr("checked", true);
+                }
+            });
+            deleteRow3(3, true);
+        }
+    }
 
     function addCount01(p) {
         if (p.v.o === undefined) {
             return;
         }
-
         var oldVal = p.v.o;
         var newVal = p.v.n;
         var bhVal;
-
         if (oldVal.length < newVal.length) {
             // 增加
             let newSz = newVal.split(',');
             let oldSz = oldVal.split(',');
             bhVal = diff(newSz, oldSz);
             var sqrVal = $("#" + sqr).val();
-
             // 查询该发票明细
             $.ajax({
                 type: "post",
@@ -40,11 +69,11 @@
                 success: function (myData) {
                     myData = myData.replace(/\s+/g, "");
                     var myJson = jQuery.parseJSON(myData);
-
                     // 不含税金额合计
                     var allMoney = myJson.allMoney;
-                    $("#" + bhsje + p.r).val(allMoney);
-                    $("#" + bhsje + p.r).trigger('change');
+                    var bhsObj = $("#" + bhsje + p.r);
+                    bhsObj.val(allMoney);
+                    bhsObj.trigger('change');
                     // 明细行数组
                     var myJsonArray = myJson.arrays;
                     // 新增行数
@@ -82,11 +111,11 @@
                 success: function (myData) {
                     myData = myData.replace(/\s+/g, "");
                     var myJson = jQuery.parseJSON(myData);
-
                     // 不含税金额合计
                     var allMoney = myJson.allMoney;
-                    $("#" + bhsje + p.r).val(allMoney);
-                    $("#" + bhsje + p.r).trigger('change');
+                    var bshObj = $("#" + bhsje + p.r)
+                    bshObj.val(allMoney);
+                    bshObj.trigger('change');
                 }
             });
 
@@ -152,7 +181,7 @@
         queryBut.val('请勿重复点击');
         $.ajax({
             type: "post",
-            url: "/workflow/request/taide/invoice/Test.jsp",
+            url: "/workflow/request/taide/invoice/GetInvoiceByGh.jsp",
             cache: false,
             async: false,
             data: {"userId": ""},
@@ -160,7 +189,6 @@
                 window.top.Dialog.alert('获取发票信息成功。');
             }
         });
-
         setTimeout('buttonTrue()', 10000);
     }
 

@@ -1,6 +1,5 @@
 <%@ page import="com.alibaba.fastjson.JSONArray" %>
 <%@ page import="com.alibaba.fastjson.JSONObject" %>
-<%@ page import="com.weavernorth.taide.invoice.ConfigInfo" %>
 <%@ page import="com.weavernorth.taide.util.TaiDeOkHttpUtils" %>
 <%@ page import="org.apache.commons.codec.binary.Base64" %>
 <%@ page import="weaver.conn.RecordSet" %>
@@ -9,21 +8,26 @@
 <%@ page import="javax.crypto.spec.SecretKeySpec" %>
 <%@ page import="java.nio.charset.StandardCharsets" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" %>
+<%@ include file="/systeminfo/init_wev8.jsp" %>
 
 <%
     // 获取发票信息url
-    String getInvoiceUrl = ConfigInfo.InvoiceUrl.getValue();
-
+    String getInvoiceUrl = "http://101.124.7.184:8111/rest/openApi/invoice/dii";
     // 授权id
-    String appSecId = ConfigInfo.appSecId.getValue();
-    String appSecKey = ConfigInfo.appSecKey.getValue();
-    String appId = ConfigInfo.appId.getValue();
-    String userId = "1111";
+    String appSecId = "d4bf814c02abb801a2a2b6742a6d140a";
+    String appSecKey = "116837c1750110f87f285feb2148ad2c";
+    String appId = "BXSDK";
     String enterpriseId = "000001";
     RecordSet recordSet = new RecordSet();
     BaseBean baseBean = new BaseBean();
     try {
         baseBean.writeLog("获取发票信息开始========================");
+        int uid = user.getUID();
+        recordSet.executeQuery("select workcode from hrmresource where id = " + uid);
+        recordSet.next();
+        // 员工工号
+        String userId = recordSet.getString("workcode");
+
         Base64 base64 = new Base64();
 
         JSONObject dataObject = new JSONObject(true);
@@ -42,7 +46,7 @@
 
         String srcStr = "POST/rest/openApi/invoice/dii?" +
                 "authorize={\"appSecId\":\"" + appSecId + "\"}" +
-                "&globalInfo={\"appId\":\"" + appId + "\",\"version\":\"v1.0\",\"interfaceCode\":\"INVOICE_LIST_QUERY\",\"enterpriseCode\":\"null\"}" +
+                "&globalInfo={\"appId\":\"" + appId + "\",\"version\":\"v1.0\",\"interfaceCode\":\"SELECT_INVOICE_LIST\",\"enterpriseCode\":\"null\"}" +
                 "&data=" + new String(base64.encode(myDataStr.getBytes()), StandardCharsets.UTF_8);
         baseBean.writeLog("srcStr1: " + srcStr);
 
@@ -64,7 +68,7 @@
         JSONObject globalInfoObject = new JSONObject(true);
         globalInfoObject.put("appId", appId);
         globalInfoObject.put("version", "v1.0");
-        globalInfoObject.put("interfaceCode", "INVOICE_LIST_QUERY");
+        globalInfoObject.put("interfaceCode", "SELECT_INVOICE_LIST");
         paramObject.put("globalInfo", globalInfoObject);
 
         paramObject.put("data", dataObject);
@@ -73,6 +77,7 @@
 
         // 调用接口
         String returnInvoice = TaiDeOkHttpUtils.post(getInvoiceUrl, paramObject.toJSONString());
+        baseBean.writeLog("获取发票接口返回： " + returnInvoice);
         JSONObject returnObject = JSONObject.parseObject(returnInvoice);
         JSONObject returnInfo = returnObject.getJSONObject("returnInfo");
         if (!"0000".equals(returnInfo.getString("returnCode"))) {
@@ -102,7 +107,7 @@
         try {
             String insertSql = "insert into uf_fpinfo(uuid, invoiceTypeCode, invoiceCode, invoiceNo, invoiceDate, " +
                     "totalAmount,invoiceAmount,taxAmount,isCanceled,reimburseState, " +
-                    "checkState, isDeductible, inputtaxamount, reimburseamount, userId, " +
+                    "checkState, isDeductible, transferTax, reimburseamount, userId, " +
                     "enterpriseId, salerName, buyerName) " +
                     "values (?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?, ?,?,?)";
 

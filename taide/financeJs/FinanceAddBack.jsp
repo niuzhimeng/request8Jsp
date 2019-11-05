@@ -97,19 +97,21 @@
             JSONArray arrays = new JSONArray();
             BigDecimal bigDecimal = new BigDecimal("0");
             while (recordSet.next()) {
+                String invoiceNo = recordSet.getString("invoiceNo");
+                String uuid = recordSet.getString("uuid");
+                String noTaxAmount = recordSet.getString("noTaxAmount");
                 bigDecimal = bigDecimal.add(new BigDecimal(recordSet.getString("invoiceAmount")));
                 if (!diffList.contains(recordSet.getString("uuid"))) {
                     continue;
                 }
                 // 查询明细数据
-                baseBean.writeLog("recordSet.getString(\"isDeductible\"): " + recordSet.getString("isDeductible"));
                 if ("Y".equalsIgnoreCase(recordSet.getString("isDeductible"))) {
                     detailSet.executeQuery("select id, uuid, invoiceNo, noTaxAmount from uf_fpseinfo where uuid = '" + recordSet.getString("uuid") + "'");
                     while (detailSet.next()) {
                         JSONObject xmObject = new JSONObject();
-                        xmObject.put("uuid", detailSet.getString("id"));
-                        xmObject.put("invoiceNo", detailSet.getString("invoiceNo"));
-                        xmObject.put("noTaxAmount", detailSet.getString("noTaxAmount"));
+                        xmObject.put("uuid", uuid);
+                        xmObject.put("invoiceNo", invoiceNo);
+                        xmObject.put("noTaxAmount", noTaxAmount);
                         arrays.add(xmObject);
                     }
                 }
