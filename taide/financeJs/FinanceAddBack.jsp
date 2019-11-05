@@ -100,7 +100,11 @@
                 String invoiceNo = recordSet.getString("invoiceNo");
                 String uuid = recordSet.getString("uuid");
                 String noTaxAmount = recordSet.getString("noTaxAmount");
-                bigDecimal = bigDecimal.add(new BigDecimal(recordSet.getString("invoiceAmount")));
+                String s = Util.null2String(recordSet.getString("invoiceAmount"));
+                if ("".equals(s)) {
+                    s = "0";
+                }
+                bigDecimal = bigDecimal.add(new BigDecimal(s));
                 if (!diffList.contains(recordSet.getString("uuid"))) {
                     continue;
                 }
