@@ -94,87 +94,85 @@
 
         User user_new = null;
         if (rs.next()) {
+            request.getSession().invalidate();
             // OA有相关人员
             User user = (User) request.getSession(true).getAttribute("weaver_user@bean");
             // 用户session不存在 或者 用户session中的用户名和此次登录的用户名不一致，要重启构造用户session
-            if (user == null || !user.getLoginid().equals(loginId)) {
-                //用户登录
-                user_new = new User();
-                user_new.setUid(rs.getInt("id"));
-                user_new.setLoginid(rs.getString("loginid"));
-                user_new.setFirstname(rs.getString("firstname"));
-                user_new.setLastname(rs.getString("lastname"));
-                user_new.setAliasname(rs.getString("aliasname"));
-                user_new.setTitle(rs.getString("title"));
-                user_new.setTitlelocation(rs.getString("titlelocation"));
-                user_new.setSex(rs.getString("sex"));
-                user_new.setPwd(rs.getString("password"));
-                String languageidweaver = rs.getString("systemlanguage");
-                user_new.setLanguage(Util.getIntValue(languageidweaver, 0));
-                user_new.setTelephone(rs.getString("telephone"));
-                user_new.setMobile(rs.getString("mobile"));
-                user_new.setMobilecall(rs.getString("mobilecall"));
-                user_new.setEmail(rs.getString("email"));
-                user_new.setCountryid(rs.getString("countryid"));
-                user_new.setLocationid(rs.getString("locationid"));
-                user_new.setResourcetype(rs.getString("resourcetype"));
-                user_new.setStartdate(rs.getString("startdate"));
-                user_new.setEnddate(rs.getString("enddate"));
-                user_new.setContractdate(rs.getString("contractdate"));
-                user_new.setJobtitle(rs.getString("jobtitle"));
-                user_new.setJobgroup(rs.getString("jobgroup"));
-                user_new.setJobactivity(rs.getString("jobactivity"));
-                user_new.setJoblevel(rs.getString("joblevel"));
-                user_new.setSeclevel(rs.getString("seclevel"));
-                user_new.setUserDepartment(Util.getIntValue(rs.getString("departmentid"), 0));
-                user_new.setUserSubCompany1(Util.getIntValue(rs.getString("subcompanyid1"), 0));
-                user_new.setUserSubCompany2(Util.getIntValue(rs.getString("subcompanyid2"), 0));
-                user_new.setUserSubCompany3(Util.getIntValue(rs.getString("subcompanyid3"), 0));
-                user_new.setUserSubCompany4(Util.getIntValue(rs.getString("subcompanyid4"), 0));
-                user_new.setManagerid(rs.getString("managerid"));
-                user_new.setAssistantid(rs.getString("assistantid"));
-                user_new.setPurchaselimit(rs.getString("purchaselimit"));
-                user_new.setCurrencyid(rs.getString("currencyid"));
-                user_new.setLastlogindate(rs.getString("currentdate"));
-                user_new.setLogintype("1");
-                user_new.setAccount(rs.getString("account"));
 
-                user_new.setLoginip(request.getRemoteAddr());
-                request.getSession(true).setMaxInactiveInterval(60 * 60 * 24);
-                request.getSession(true).setAttribute("weaver_user@bean", user_new);
-                request.getSession(true).setAttribute("browser_isie", getisIE(request));
+            //用户登录
+            user_new = new User();
+            user_new.setUid(rs.getInt("id"));
+            user_new.setLoginid(rs.getString("loginid"));
+            user_new.setFirstname(rs.getString("firstname"));
+            user_new.setLastname(rs.getString("lastname"));
+            user_new.setAliasname(rs.getString("aliasname"));
+            user_new.setTitle(rs.getString("title"));
+            user_new.setTitlelocation(rs.getString("titlelocation"));
+            user_new.setSex(rs.getString("sex"));
+            user_new.setPwd(rs.getString("password"));
+            String languageidweaver = rs.getString("systemlanguage");
+            user_new.setLanguage(Util.getIntValue(languageidweaver, 0));
+            user_new.setTelephone(rs.getString("telephone"));
+            user_new.setMobile(rs.getString("mobile"));
+            user_new.setMobilecall(rs.getString("mobilecall"));
+            user_new.setEmail(rs.getString("email"));
+            user_new.setCountryid(rs.getString("countryid"));
+            user_new.setLocationid(rs.getString("locationid"));
+            user_new.setResourcetype(rs.getString("resourcetype"));
+            user_new.setStartdate(rs.getString("startdate"));
+            user_new.setEnddate(rs.getString("enddate"));
+            user_new.setContractdate(rs.getString("contractdate"));
+            user_new.setJobtitle(rs.getString("jobtitle"));
+            user_new.setJobgroup(rs.getString("jobgroup"));
+            user_new.setJobactivity(rs.getString("jobactivity"));
+            user_new.setJoblevel(rs.getString("joblevel"));
+            user_new.setSeclevel(rs.getString("seclevel"));
+            user_new.setUserDepartment(Util.getIntValue(rs.getString("departmentid"), 0));
+            user_new.setUserSubCompany1(Util.getIntValue(rs.getString("subcompanyid1"), 0));
+            user_new.setUserSubCompany2(Util.getIntValue(rs.getString("subcompanyid2"), 0));
+            user_new.setUserSubCompany3(Util.getIntValue(rs.getString("subcompanyid3"), 0));
+            user_new.setUserSubCompany4(Util.getIntValue(rs.getString("subcompanyid4"), 0));
+            user_new.setManagerid(rs.getString("managerid"));
+            user_new.setAssistantid(rs.getString("assistantid"));
+            user_new.setPurchaselimit(rs.getString("purchaselimit"));
+            user_new.setCurrencyid(rs.getString("currencyid"));
+            user_new.setLastlogindate(rs.getString("currentdate"));
+            user_new.setLogintype("1");
+            user_new.setAccount(rs.getString("account"));
 
-                request.getSession(true).setAttribute("moniter", new OnLineMonitor("" + user_new.getUID(), user_new.getLoginip()));
-                Util.setCookie(response, "loginfileweaver", "/main.jsp", 172800);
-                Util.setCookie(response, "loginidweaver", "" + user_new.getUID(), 172800);
-                Util.setCookie(response, "languageidweaver", languageidweaver, 172800);
+            user_new.setLoginip(request.getRemoteAddr());
+            request.getSession(true).setMaxInactiveInterval(60 * 60 * 24);
+            request.getSession(true).setAttribute("weaver_user@bean", user_new);
+            request.getSession(true).setAttribute("browser_isie", getisIE(request));
 
-                Map logmessages = (Map) application.getAttribute("logmessages");
-                if (logmessages == null) {
-                    logmessages = new HashMap();
-                    logmessages.put(String.valueOf(user_new.getUID()), "");
-                    application.setAttribute("logmessages", logmessages);
-                }
+            request.getSession(true).setAttribute("moniter", new OnLineMonitor("" + user_new.getUID(), user_new.getLoginip()));
+            Util.setCookie(response, "loginfileweaver", "/main.jsp", 172800);
+            Util.setCookie(response, "loginidweaver", "" + user_new.getUID(), 172800);
+            Util.setCookie(response, "languageidweaver", languageidweaver, 172800);
 
-                request.getSession(true).setAttribute("logmessage", getLogMessage(String.valueOf(user_new.getUID())));
+            Map logmessages = (Map) application.getAttribute("logmessages");
+            if (logmessages == null) {
+                logmessages = new HashMap();
+                logmessages.put(String.valueOf(user_new.getUID()), "");
+                application.setAttribute("logmessages", logmessages);
+            }
 
-                // 登录日志
-                SysMaintenanceLog log1 = new SysMaintenanceLog();
-                log1.resetParameter();
-                log1.setRelatedId(rs.getInt("id"));
-                log1.setRelatedName((rs.getString("firstname") + " " + rs.getString("lastname")).trim());
-                log1.setOperateType("6");
-                log1.setOperateDesc("");
-                log1.setOperateItem("60");
-                log1.setOperateUserid(rs.getInt("id"));
-                log1.setClientAddress(request.getRemoteAddr());
-                try {
-                    log1.setSysLogInfo();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            } else {
-                user_new = user;
+            request.getSession(true).setAttribute("logmessage", getLogMessage(String.valueOf(user_new.getUID())));
+
+            // 登录日志
+            SysMaintenanceLog log1 = new SysMaintenanceLog();
+            log1.resetParameter();
+            log1.setRelatedId(rs.getInt("id"));
+            log1.setRelatedName((rs.getString("firstname") + " " + rs.getString("lastname")).trim());
+            log1.setOperateType("6");
+            log1.setOperateDesc("");
+            log1.setOperateItem("60");
+            log1.setOperateUserid(rs.getInt("id"));
+            log1.setClientAddress(request.getRemoteAddr());
+            try {
+                log1.setSysLogInfo();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
 
         } else {
