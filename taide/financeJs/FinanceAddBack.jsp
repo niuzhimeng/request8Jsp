@@ -56,7 +56,20 @@
 
             BigDecimal bigDecimal = new BigDecimal("0");
             while (recordSet.next()) {
-                bigDecimal = bigDecimal.add(new BigDecimal(recordSet.getString("invoiceAmount")));
+                String bz = recordSet.getString("currencyTypeCode"); // 币种
+                if ("101".equals(bz)) { // 只汇总人民币
+                    String isDeductible = Util.null2String(recordSet.getString("isDeductible"));
+                    String s;
+                    if ("Y".equalsIgnoreCase(isDeductible)) {
+                        s = Util.null2String(recordSet.getString("reimburseLineTotalAmount"));
+                    } else {
+                        s = Util.null2String(recordSet.getString("reimbursableAmount"));
+                    }
+                    if ("".equals(s)) {
+                        s = "0";
+                    }
+                    bigDecimal = bigDecimal.add(new BigDecimal(s));
+                }
             }
 
             AllObject.put("allMoney", bigDecimal.doubleValue());
@@ -98,24 +111,36 @@
             BigDecimal bigDecimal = new BigDecimal("0");
             while (recordSet.next()) {
                 String invoiceNo = recordSet.getString("invoiceNo");
+                String invoicecode = recordSet.getString("INVOICECODE");
                 String uuid = recordSet.getString("uuid");
-                String noTaxAmount = recordSet.getString("noTaxAmount");
-                String s = Util.null2String(recordSet.getString("invoiceAmount"));
-                if ("".equals(s)) {
-                    s = "0";
+                String taxAmount = recordSet.getString("TAXAMOUNT");
+                String bz = recordSet.getString("currencyTypeCode"); // 币种
+                if ("101".equals(bz)) { // 只汇总人民币
+                    String isDeductible = Util.null2String(recordSet.getString("isDeductible"));
+                    String s;
+                    if ("Y".equalsIgnoreCase(isDeductible)) {
+                        s = Util.null2String(recordSet.getString("reimburseLineTotalAmount"));
+                    } else {
+                        s = Util.null2String(recordSet.getString("reimbursableAmount"));
+                    }
+                    if ("".equals(s)) {
+                        s = "0";
+                    }
+                    bigDecimal = bigDecimal.add(new BigDecimal(s));
                 }
-                bigDecimal = bigDecimal.add(new BigDecimal(s));
                 if (!diffList.contains(recordSet.getString("uuid"))) {
                     continue;
                 }
                 // 查询明细数据
                 if ("Y".equalsIgnoreCase(recordSet.getString("isDeductible"))) {
-                    detailSet.executeQuery("select id, uuid, invoiceNo, noTaxAmount from uf_fpseinfo where uuid = '" + recordSet.getString("uuid") + "'");
+                    detailSet.executeQuery("select taxAmount, detailTransferTax from uf_fpseinfo where uuid = '" + recordSet.getString("uuid") + "'");
                     while (detailSet.next()) {
                         JSONObject xmObject = new JSONObject();
                         xmObject.put("uuid", uuid);
                         xmObject.put("invoiceNo", invoiceNo);
-                        xmObject.put("noTaxAmount", noTaxAmount);
+                        xmObject.put("invoicecode", invoicecode);
+                        xmObject.put("taxAmount", detailSet.getString("taxAmount"));
+                        xmObject.put("detailTransferTax", detailSet.getString("detailTransferTax"));
                         arrays.add(xmObject);
                     }
                 }

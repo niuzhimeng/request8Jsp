@@ -115,8 +115,9 @@
             String insertDetailSql = "insert into uf_fpseinfo(uuid, goodsName, model, unit, invoiceNo, " +
                     "invoiceCode,unitPrice,noTaxAmount,taxRate,taxAmount, " +
                     "detailNo, expenseItem, plateNo, type, trafficDateStart, " +
-                    "trafficDateEnd, reimbursedetailamount, userId, enterpriseId)" +
-                    "values (?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?, ?,?,?,?)";
+                    "trafficDateEnd, reimbursedetailamount, userId, enterpriseId, detailReimbursableAmount," +
+                    "detailTransferTax)" +
+                    "values (?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?, ?)";
             int size = invoiceArray.size();
             baseBean.writeLog("返回发票总数： " + size);
             for (int i = 0; i < size; i++) {
@@ -180,7 +181,10 @@
                                 detailList.getJSONObject(j).getString("trafficDateEnd"),
                                 detailList.getJSONObject(j).getString("reimbursedetailamount"),
                                 userId,
-                                enterpriseId
+                                enterpriseId,
+                                detailList.getJSONObject(j).getString("detailReimbursableAmount"),
+
+                                detailList.getJSONObject(j).getString("detailTransferTax")
                         );
                     }
                 }
