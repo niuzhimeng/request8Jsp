@@ -107,9 +107,10 @@
         try {
             String insertSql = "insert into uf_fpinfo(uuid, invoiceTypeCode, invoiceCode, invoiceNo, invoiceDate, " +
                     "totalAmount,invoiceAmount,taxAmount,isCanceled,reimburseState, " +
-                    "checkState, isDeductible, transferTax, reimburseamount, userId, " +
-                    "enterpriseId, salerName, buyerName) " +
-                    "values (?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?, ?,?,?)";
+                    "checkState, isDeductible, transferTax, reimbursableAmount, userId, " +
+                    "enterpriseId, salerName, buyerName, currencyTypeCode, currencyTypeName," +
+                    "reimburseLineTotalAmount, invoiceTypeName) " +
+                    "values (?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?, ?,?)";
 
             String insertDetailSql = "insert into uf_fpseinfo(uuid, goodsName, model, unit, invoiceNo, " +
                     "invoiceCode,unitPrice,noTaxAmount,taxRate,taxAmount, " +
@@ -120,12 +121,15 @@
             baseBean.writeLog("返回发票总数： " + size);
             for (int i = 0; i < size; i++) {
                 String uuid = invoiceArray.getJSONObject(i).getString("uuid");
+                String invoiceNo = invoiceArray.getJSONObject(i).getString("invoiceNo");
+                String invoiceCode = invoiceArray.getJSONObject(i).getString("invoiceCode");
+                String isDeductible = invoiceArray.getJSONObject(i).getString("isDeductible");
                 mainSet.executeUpdate(insertSql,
                         uuid,
                         invoiceArray.getJSONObject(i).getString("invoiceTypeCode"),
                         invoiceArray.getJSONObject(i).getString("invoiceCode"),
-                        invoiceArray.getJSONObject(i).getString("invoiceNo"),
-                        invoiceArray.getJSONObject(i).getString("invoiceDate"),
+                        invoiceNo,
+                        invoiceCode,
 
                         invoiceArray.getJSONObject(i).getString("totalAmount"),
                         invoiceArray.getJSONObject(i).getString("invoiceAmount"),
@@ -134,18 +138,23 @@
                         invoiceArray.getJSONObject(i).getString("reimburseState"),
 
                         invoiceArray.getJSONObject(i).getString("checkState"),
-                        invoiceArray.getJSONObject(i).getString("isDeductible"),
+                        isDeductible,
                         invoiceArray.getJSONObject(i).getString("inputtaxamount"),
-                        invoiceArray.getJSONObject(i).getString("reimburseamount"),
+                        invoiceArray.getJSONObject(i).getString("reimbursableAmount"),
                         userId,
 
                         enterpriseId,
                         invoiceArray.getJSONObject(i).getString("salerName"),
-                        invoiceArray.getJSONObject(i).getString("buyerName")
+                        invoiceArray.getJSONObject(i).getString("buyerName"),
+                        invoiceArray.getJSONObject(i).getString("currencyTypeCode"),
+                        invoiceArray.getJSONObject(i).getString("currencyTypeName"),
+
+                        invoiceArray.getJSONObject(i).getString("reimburseLineTotalAmount"),
+                        invoiceArray.getJSONObject(i).getString("invoiceTypeName")
                 );
                 // 插入明细
                 JSONArray detailList = invoiceArray.getJSONObject(i).getJSONArray("detailList");
-                if (detailList == null) {
+                if (detailList == null || !"Y".equalsIgnoreCase(isDeductible)) {
                     continue;
                 } else {
                     for (int j = 0; j < detailList.size(); j++) {
@@ -154,9 +163,9 @@
                                 detailList.getJSONObject(j).getString("goodsName"),
                                 detailList.getJSONObject(j).getString("model"),
                                 detailList.getJSONObject(j).getString("unit"),
-                                detailList.getJSONObject(j).getString("invoiceNo"),
+                                invoiceNo,
 
-                                detailList.getJSONObject(j).getString("invoiceCode"),
+                                invoiceCode,
                                 detailList.getJSONObject(j).getString("unitPrice"),
                                 detailList.getJSONObject(j).getString("noTaxAmount"),
                                 detailList.getJSONObject(j).getString("taxRate"),

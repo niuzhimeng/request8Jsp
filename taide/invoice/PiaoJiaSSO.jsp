@@ -8,7 +8,7 @@
 <%
     BaseBean baseBean = new BaseBean();
     // 票夹页面url
-    String getInvoiceUrl = "http://101.124.7.184:8111/rest/bxsdk/web/authorize?data=";
+    String getInvoiceUrl = "https://wx.5ifapiao.com/bxsdktd/rest/bxsdk/web/authorize?data=";
     // 授权id
     String appSecId = "d4bf814c02abb801a2a2b6742a6d140a";
     // 企业id
