@@ -44,6 +44,10 @@
                 var zsfVal = $("#" + zsf + '_' + nums[i]).val();
                 var cfVal = $("#" + cf + '_' + nums[i]).val();
                 var jtbtVal = $("#" + jtbt + '_' + nums[i]).val();
+                if(zsfVal ==='' || cfVal ===''|| jtbtVal ===''){
+                    window.top.Dialog.alert('【住宿费】【餐费】【交通补贴】均不能为空。');
+                    return false;
+                }
                 myArray.push({
                     'myNumber': myNumber,
                     'cctsVal': cctsVal,
