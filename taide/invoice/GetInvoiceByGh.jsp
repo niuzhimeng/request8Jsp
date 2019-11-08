@@ -86,9 +86,9 @@
 
         JSONArray invoiceArray = returnObject.getJSONArray("invoice");
 
-        // 删除旧信息
-        recordSet.executeUpdate("delete from uf_fpinfo where userId = '" + userId + "' and enterpriseId = '" + enterpriseId + "'");
-        recordSet.executeUpdate("delete from uf_fpseinfo where userId = '" + userId + "' and enterpriseId = '" + enterpriseId + "'");
+        // 删除未报销发票信息（只有未报销发票才会更新）
+        recordSet.executeUpdate("delete from uf_fpinfo where userId = '" + userId + "' and enterpriseId = '" + enterpriseId + "' and reimburseState = 0");
+        recordSet.executeUpdate("delete from uf_fpseinfo where userId = '" + userId + "' and enterpriseId = '" + enterpriseId + "' and reimburseState = 0");
 
         // 插入新的发票信息
         insert(invoiceArray, userId, enterpriseId);
