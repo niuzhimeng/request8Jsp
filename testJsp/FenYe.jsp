@@ -26,7 +26,6 @@
                     int perpage = 10;
                     String backfields = "h.*";
                     String fromSql = " hrmresource h ";
-                    String os_currentnodeotherpara = "column:requestid";
                     String sqlWhere = "1=1";
                     String tableString = "" +
                             "<table instanceid=\"CptCapitalAssortmentTable\"  tabletype=\"none\"  pagesize=\"" + perpage + "\"  >" +

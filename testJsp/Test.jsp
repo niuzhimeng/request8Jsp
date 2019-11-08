@@ -1,8 +1,3 @@
-<%@ page import="com.alibaba.fastjson.JSON" %>
-<%@ page import="com.alibaba.fastjson.JSONObject" %>
-<%@ page import="weaver.conn.RecordSet" %>
-<%@ page import="weaver.conn.BatchRecordSet" %>
-<%@ page import="java.util.*" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" %>
 <jsp:useBean id="RequestManager" class="weaver.workflow.request.RequestManager" scope="page"/>
 <jsp:useBean id="flowDocss" class="weaver.workflow.request.RequestDoc" scope="session"/>
@@ -11,7 +6,18 @@
 <%@ include file="/systeminfo/init_wev8.jsp" %>
 <script type="text/javascript" language="javascript" src="/FCKEditor/FCKEditorExt_wev8.js"></script>
 <%--<script type="text/javascript" language="JavaScript" src="/workflow/request/testJsp/test.js"></script>--%>
-<html>
+
+
+<script src="/classbean/com/weavernorth/cw.js"></script>
+<script src="/workflow/request/taide/financeJs/FinanceAdd.js?myCount=3"></script>
+<script type="text/javascript">
+    $(function () {
+        $("#" + nzmdqr).bindPropertyChange(function () {
+            alert(1)
+            addFinance123();
+        })
+    });
+</script>
 
 
 <script type="text/javascript">
@@ -19,7 +25,8 @@
         var bt = $("#requestname").val();
         $("#requestname").css('color', 'red')
         $("#requestname").val(bt + '自己代码加的');
-    });
+    })
+    ;
 </script>
 
 

@@ -102,7 +102,12 @@
                         $("#" + bhsjemx + '_' + currentMxs[currentRows] + 'span').html(myJsonArray[i].taxAmount);
                         $("#" + jxs + '_' + currentMxs[currentRows]).val(myJsonArray[i].detailTransferTax);
                         $("#" + jxs + '_' + currentMxs[currentRows] + 'span').html(myJsonArray[i].detailTransferTax);
+                        if (i === length - 1) {
+                            $("#" + jxs + '_' + currentMxs[currentRows]).trigger('change');
+                            $("#" + bhsjemx + '_' + currentMxs[currentRows]).trigger('change');
+                        }
                         currentRows++;
+
                     }
                 }
             });
