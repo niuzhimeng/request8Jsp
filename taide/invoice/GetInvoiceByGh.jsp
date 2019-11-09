@@ -86,9 +86,8 @@
 
         JSONArray invoiceArray = returnObject.getJSONArray("invoice");
 
-        // 删除未报销发票信息（只有未报销发票才会更新）
+        // 删除主表未报销发票信息（只有未报销发票才会更新）
         recordSet.executeUpdate("delete from uf_fpinfo where userId = '" + userId + "' and enterpriseId = '" + enterpriseId + "' and reimburseState = 0");
-        recordSet.executeUpdate("delete from uf_fpseinfo where userId = '" + userId + "' and enterpriseId = '" + enterpriseId + "' and reimburseState = 0");
 
         // 插入新的发票信息
         insert(invoiceArray, userId, enterpriseId);
@@ -158,6 +157,8 @@
                 if (detailList == null || !"Y".equalsIgnoreCase(isDeductible)) {
                     continue;
                 } else {
+                    // 删除原有明细
+                    detailSet.executeUpdate("delete from uf_fpseinfo where uuid = '" + uuid + "'");
                     for (int j = 0; j < detailList.size(); j++) {
                         detailSet.executeUpdate(insertDetailSql,
                                 uuid,
