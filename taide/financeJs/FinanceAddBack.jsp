@@ -133,7 +133,7 @@
                 }
                 // 查询明细数据
                 if ("Y".equalsIgnoreCase(recordSet.getString("isDeductible"))) {
-                    detailSet.executeQuery("select taxAmount, detailTransferTax from uf_fpseinfo where uuid = '" + recordSet.getString("uuid") + "'");
+                    detailSet.executeQuery("select taxAmount, detailTransferTax, taxrate from uf_fpseinfo where uuid = '" + recordSet.getString("uuid") + "'");
                     while (detailSet.next()) {
                         JSONObject xmObject = new JSONObject();
                         xmObject.put("uuid", uuid);
@@ -141,6 +141,7 @@
                         xmObject.put("invoicecode", invoicecode);
                         xmObject.put("taxAmount", detailSet.getString("taxAmount"));
                         xmObject.put("detailTransferTax", detailSet.getString("detailTransferTax"));
+                        xmObject.put("taxrate", detailSet.getString("taxrate"));
                         arrays.add(xmObject);
                     }
                 }

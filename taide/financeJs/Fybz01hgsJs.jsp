@@ -1,3 +1,4 @@
+<%--01-费用报支-汇公司（新）--%>
 <script src="/workflow/request/testJsp/cw.js"></script>
 <script type="text/javascript">
     var fpzd = 'field15550'; // 发票字段
@@ -10,6 +11,7 @@
     var fpCode = 'field12157'; // 发票Code
     var bhsjemx = 'field12160'; // 不含税金额
     var jxs = 'field15379'; // 进项税
+    var sl = 'field12159'; // 税率
     var mxbNum1 = 'submitdtlid0'; // 明细表1（主）
     var mxbNum4 = 'submitdtlid3'; // 明细表4（次）
     $(function () {
@@ -97,11 +99,15 @@
                     let currentMxs = mxbObj.val().split(",");
                     for (let i = 0; i < length; i++) {
                         $("#" + fpid + '_' + currentMxs[currentRows]).val(myJsonArray[i].uuid + p.r);
+                        $("#" + fpid + '_' + currentMxs[currentRows] + 'span').html(myJsonArray[i].uuid + p.r);
                         $("#" + fph + '_' + currentMxs[currentRows]).val(myJsonArray[i].invoiceNo);
+                        $("#" + fph + '_' + currentMxs[currentRows] + 'span').html(myJsonArray[i].invoiceNo);
                         $("#" + bhsjemx + '_' + currentMxs[currentRows]).val(myJsonArray[i].taxAmount);
                         $("#" + bhsjemx + '_' + currentMxs[currentRows] + 'span').html(myJsonArray[i].taxAmount);
                         $("#" + jxs + '_' + currentMxs[currentRows]).val(myJsonArray[i].detailTransferTax);
                         $("#" + jxs + '_' + currentMxs[currentRows] + 'span').html(myJsonArray[i].detailTransferTax);
+                        $("#" + sl + '_' + currentMxs[currentRows]).val(myJsonArray[i].taxrate);
+                        $("#" + sl + '_' + currentMxs[currentRows] + 'span').html(myJsonArray[i].taxrate);
                         if (i === length - 1) {
                             $("#" + jxs + '_' + currentMxs[currentRows]).trigger('change');
                             $("#" + bhsjemx + '_' + currentMxs[currentRows]).trigger('change');
