@@ -78,6 +78,7 @@
                     var bhsObj = $("#" + bhsje + p.r);
                     bhsObj.val(allMoney);
                     bhsObj.trigger('change');
+                    $("#" + bhsje + p.r + 'span').html(allMoney);
                     // 明细行数组
                     var myJsonArray = myJson.arrays;
                     // 新增行数
