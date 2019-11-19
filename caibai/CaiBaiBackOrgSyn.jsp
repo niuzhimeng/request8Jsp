@@ -5,13 +5,14 @@
 <%@ page import="com.weavernorth.caibai.sap.CaiBaiPoolThree" %>
 <%@ page import="weaver.general.BaseBean" %>
 <%@ page import="weaver.general.TimeUtil" %>
+<%@ page import="com.weavernorth.caibai.sap.CaiBaiPoolThreeFormal" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
 <%
     BaseBean baseBean = new BaseBean();
     baseBean.writeLog("CaiBaiBackTest.jsp 执行=========== " + TimeUtil.getCurrentTimeString());
     try {
-        JCoDestination jCoDestination = CaiBaiPoolThree.getJCoDestination();
+        JCoDestination jCoDestination = CaiBaiPoolThreeFormal.getJCoDestination();
         jCoDestination.ping();
 
         baseBean.writeLog("ping 通=====");

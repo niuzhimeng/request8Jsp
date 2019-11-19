@@ -112,11 +112,12 @@
                     locationStr = "北京";
                 }
                 String locationId = insertLocation(locationStr);
+                String telPhone = Util.null2String(hrmResource.getTelephone());
 
                 baseBean.writeLog("========================");
                 baseBean.writeLog("人员姓名： " + hrmResource.getLastname() + ", 登录名： " + loginId);
                 baseBean.writeLog("所属部门编码： " + depCode + ", mhStatus： " + mhStatus);
-                baseBean.writeLog("性别： " + sex + ", 工作地点： " + locationStr);
+                baseBean.writeLog("性别： " + sex + ", 工作地点： " + locationStr + ", 办公室电话: " + telPhone);
 
                 //部门ID
                 int depId = Util.getIntValue(depIdMap.get(depCode), 0);
@@ -161,6 +162,7 @@
                 hrmResource.setSystemlanguage("7");
                 // 安全级别默认10
                 hrmResource.setSeclevel("10");
+                hrmResource.setTelephone(telPhone);
 
                 if (!loginIdList.contains(loginId)) {
                     String newId = String.valueOf(getHrmMaxId());
@@ -209,8 +211,8 @@
             String sql = "insert into hrmresource (workcode, lastname, loginid, status, sex," +
                     " locationid, email, mobile, managerid, seclevel, " +
                     "departmentid, subcompanyid1, jobtitle, dsporder, id," +
-                    "password, accounttype, belongto, systemlanguage) " +
-                    "values (?,?,?,?,?,  ?,?,?,?,?,  ?,?,?,?,?,  ?,?,?,?)";
+                    "password, accounttype, belongto, systemlanguage, telephone) " +
+                    "values (?,?,?,?,?,  ?,?,?,?,?,  ?,?,?,?,?,  ?,?,?,?,?)";
             statement.setStatementSql(sql);
             int stnCount = 0;
             for (GdHrmResource hrmResource : insertHrmResourceList) {
@@ -241,6 +243,7 @@
                 statement.setString(17, hrmResource.getAccounttype());
                 statement.setString(18, hrmResource.getBelongto());
                 statement.setString(19, hrmResource.getSystemlanguage());
+                statement.setString(20, hrmResource.getTelephone());
 
                 statement.executeUpdate();
                 hrmResource.updaterights(hrmResource.getId());
@@ -258,7 +261,7 @@
         ConnStatement statement = new ConnStatement();
         try {
             String sql = "update hrmresource set lastname = ?, status = ?, sex = ?, locationid = ?, mobile = ?, " +
-                    "departmentid = ?, subcompanyid1 = ?, email = ?, workcode = ? where loginid = ?";
+                    "departmentid = ?, subcompanyid1 = ?, email = ?, workcode = ?, telephone = ? where loginid = ?";
             statement.setStatementSql(sql);
             int stnCount = 0;
             for (GdHrmResource hrmResource : updateHrmResourceList) {
@@ -277,7 +280,9 @@
                 statement.setString(7, hrmResource.getSubId());
                 statement.setString(8, hrmResource.getEmail());
                 statement.setString(9, hrmResource.getWorkcode());
-                statement.setString(10, hrmResource.getLoginid());
+                statement.setString(10, hrmResource.getTelephone());
+
+                statement.setString(11, hrmResource.getLoginid());
 
                 statement.executeUpdate();
                 stnCount++;
