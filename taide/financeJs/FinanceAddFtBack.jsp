@@ -59,6 +59,7 @@
                 String totalAmount = recordSet.getString("totalAmount");
                 String invoiceAmount = recordSet.getString("invoiceAmount");
                 String taxAmount = recordSet.getString("taxAmount");
+                String isdeductible = recordSet.getString("ISDEDUCTIBLE");
 
                 mainObject.put("invoiceNo", invoiceNo);
                 mainObject.put("uuid", uuid);
@@ -69,6 +70,7 @@
                 mainObject.put("totalAmount", totalAmount);
                 mainObject.put("invoiceAmount", invoiceAmount);
                 mainObject.put("taxAmount", taxAmount);
+                mainObject.put("isdeductible", isdeductible);
                 mainArrays.add(mainObject);
 
                 // 查询明细数据
