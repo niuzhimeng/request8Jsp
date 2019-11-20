@@ -194,7 +194,7 @@
         JSONArray jsonArray = new JSONArray();
         String oaUrl;
         for (DocInfo docInfo : list) {
-            oaUrl = "http://10.1.11.27/gaodeng?forwardUrl=/docs/docs/DocDsp.jsp?id=" + docInfo.getId() + "&isOpenFirstAss=0";
+            oaUrl = "http://gjoa.hep.cn/gaodeng?forwardUrl=/docs/docs/DocDsp.jsp?id=" + docInfo.getId() + "&isOpenFirstAss=0";
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("docId", docInfo.getId());
             jsonObject.put("docName", docInfo.getDocSubject());

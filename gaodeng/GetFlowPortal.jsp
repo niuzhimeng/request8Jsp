@@ -123,7 +123,7 @@
             if (i >= defaultCounts) {
                 break;
             }
-            oaUrl = "http://10.1.11.27/gaodeng?forwardUrl=workflow/request/gaodeng/OpenOAFlowBySSO.jsp?requestId=" + rs.getString("requestid");
+            oaUrl = "http://gjoa.hep.cn/gaodeng?forwardUrl=workflow/request/gaodeng/OpenOAFlowBySSO.jsp?requestId=" + rs.getString("requestid");
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("requestId", rs.getString("requestid"));
             jsonObject.put("requestName", rs.getString("requestnamenew"));
