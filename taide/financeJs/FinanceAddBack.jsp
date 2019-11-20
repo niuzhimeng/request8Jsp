@@ -54,9 +54,12 @@
             recordSet.executeQuery(selectSql);
 
             BigDecimal bigDecimal = new BigDecimal("0");
+            BigDecimal wbDecimal = new BigDecimal("0"); // 外币合计
+            boolean ifRmb = false;
             while (recordSet.next()) {
                 String bz = recordSet.getString("currencyTypeCode"); // 币种
-                if ("CNY".equals(bz)) { // 只汇总人民币
+                if ("CNY".equals(bz)) { // 汇总人民币
+                    ifRmb = true;
                     String isDeductible = Util.null2String(recordSet.getString("isDeductible"));
                     String s;
                     if ("Y".equalsIgnoreCase(isDeductible)) {
@@ -64,16 +67,25 @@
                     } else {
                         s = Util.null2String(recordSet.getString("reimbursableAmount"));
                     }
-
                     if ("".equals(s)) {
                         s = "0";
                     }
-
                     bigDecimal = bigDecimal.add(new BigDecimal(s));
+                } else {
+                    String s = Util.null2String(recordSet.getString("reimbursableAmount"));
+                    if ("".equals(s)) {
+                        s = "0";
+                    }
+                    wbDecimal = wbDecimal.add(new BigDecimal(s));
                 }
             }
-            baseBean.writeLog("bigDecimal.doubleValue(): " + bigDecimal.doubleValue());
-            AllObject.put("allMoney", bigDecimal.doubleValue());
+            double endJe;
+            if (ifRmb) {
+                endJe = bigDecimal.doubleValue();
+            } else {
+                endJe = wbDecimal.doubleValue();
+            }
+            AllObject.put("allMoney", endJe);
         } catch (Exception e) {
             baseBean.writeLog("FinanceAddBack.jsp calculateCounts异常： " + e);
         }
@@ -109,13 +121,16 @@
             recordSet.executeQuery(selectSql);
 
             JSONArray arrays = new JSONArray();
-            BigDecimal bigDecimal = new BigDecimal("0");
+            BigDecimal rmbDecimal = new BigDecimal("0"); // 人民币合计
+            BigDecimal wbDecimal = new BigDecimal("0"); // 外币合计
+            boolean ifRmb = false;
             while (recordSet.next()) {
                 String invoiceNo = recordSet.getString("invoiceNo");
                 String invoicecode = recordSet.getString("INVOICECODE");
                 String uuid = recordSet.getString("uuid");
                 String bz = recordSet.getString("currencyTypeCode"); // 币种
-                if ("CNY".equals(bz)) { // 只汇总人民币
+                if ("CNY".equals(bz)) { // 汇总人民币
+                    ifRmb = true;
                     String isDeductible = Util.null2String(recordSet.getString("isDeductible"));
                     String s;
                     if ("Y".equalsIgnoreCase(isDeductible)) {
@@ -126,7 +141,13 @@
                     if ("".equals(s)) {
                         s = "0";
                     }
-                    bigDecimal = bigDecimal.add(new BigDecimal(s));
+                    rmbDecimal = rmbDecimal.add(new BigDecimal(s));
+                } else {
+                    String s = Util.null2String(recordSet.getString("reimbursableAmount"));
+                    if ("".equals(s)) {
+                        s = "0";
+                    }
+                    wbDecimal = wbDecimal.add(new BigDecimal(s));
                 }
                 if (!diffList.contains(recordSet.getString("uuid"))) {
                     continue;
@@ -146,8 +167,13 @@
                     }
                 }
             }
-
-            AllObject.put("allMoney", bigDecimal.doubleValue());
+            double endJe;
+            if (ifRmb) {
+                endJe = rmbDecimal.doubleValue();
+            } else {
+                endJe = wbDecimal.doubleValue();
+            }
+            AllObject.put("allMoney", endJe);
             AllObject.put("arrays", arrays);
         } catch (Exception e) {
             baseBean.writeLog("FinanceAddBack.jsp addRowAndCounts异常： " + e);
