@@ -17,7 +17,7 @@
     String appSecId = "d4bf814c02abb801a2a2b6742a6d140a";
     String appSecKey = "116837c1750110f87f285feb2148ad2c";
     String appId = "BXSDK";
-    String enterpriseId = "000001";
+    String enterpriseId = "1010";
     RecordSet recordSet = new RecordSet();
     BaseBean baseBean = new BaseBean();
     try {

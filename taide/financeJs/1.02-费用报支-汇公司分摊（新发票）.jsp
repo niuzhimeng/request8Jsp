@@ -1,63 +1,43 @@
-<%--01-费用报支-汇公司（新）--%>
+<%--31-费用报支-汇公司（分摊-新）--%>
 <script src="/workflow/request/testJsp/cw.js"></script>
+<script src="/workflow/request/testJsp/shauter_wev8.js"></script>
 <script type="text/javascript">
-    var fpzd = 'field23829'; // 发票字段
-    var sqr = 'field23719'; // 申请人
-    var bhsje = 'field23843'; // 不含税金额
+    var fpzd = 'field23949'; // 发票字段
+    var sqr = 'field23845'; // 申请人
 
-    // ===========明细表字段
-    var fpid = 'field23832'; // 发票id
-    var fph = 'field23774'; // 发票号
+    // ===========明细表4字段
+    var fpid = 'field23954'; // 发票id
+    var fph = 'field23899'; // 发票号
     var fpCode = 'field12157'; // 发票Code
-    var bhsjemx = 'field23777'; // 不含税金额
-    var jxs = 'field23831'; // 进项税
-    var sl = 'field23776'; // 税率
-    var mxbNum1 = 'submitdtlid0'; // 明细表1（主）
-    var mxbNum4 = 'submitdtlid3'; // 明细表4（次）
+    var bhsjemx = 'field23902'; // 税额
+    var jxs = 'field23953'; // 进项税
+    var sl4 = 'field23901'; // 税率
+    var mxbNum5 = 'submitdtlid4'; // 明细表5（发票主表表信息）
+    var mxbNum4 = 'submitdtlid3'; // 明细表4（发票明细表表信息）
+
+    // ===========明细表5字段
+    let fpid5 = 'field23955'; // 发票id
+    let fph5 = 'field23957'; // 发票号
+    let fplx5 = 'field23956'; // 发票类型
+    let xsf5 = 'field23961'; // 销售方
+    let bz5 = 'field23962'; // 币种
+
+    let fphj5 = 'field23958'; // 发票合计
+    let bhs5 = 'field23959'; // 不含税金额
+    let se5 = 'field23960'; // 税额
+    let sfdk5 = 'field23963'; // 是否抵扣
 
     // 原有js
-    var fylx = 'field23748'; // 费用类型
-    var yydm = 'field23755'; // 原因代码
+    var fylx = 'field23873'; // 费用类型
+    var yydm = 'field23880'; // 原因代码
 
     $(function () {
         appendFpButton();
         _C.run2(fpzd, addCount01);
-        _C.run2(mxbNum1, deleteLine);
         jQuery("#" + fylx).bindPropertyChange(function () {
             bindFunction();
         });
-
     });
-
-    function deleteLine(p) {
-        if (p.v.o === undefined) {
-            return;
-        }
-        var oldVal = p.v.o;
-        var newVal = p.v.n;
-        var bhVal;
-        if (newVal.length < oldVal.length) {
-            let newSz = newVal.split(',');
-            let oldSz = oldVal.split(',');
-            bhVal = diff(newSz, oldSz);
-            var mxbObj = $("#" + mxbNum4).val().split(",");
-            let length1 = mxbObj.length;
-            // 删除
-            var delIndex = [];
-            for (var i = 0; i < length1; i++) {
-                var fphz = $("#" + fpid + '_' + mxbObj[i]).val().split('_');
-                if (bhVal.indexOf(fphz[1]) !== -1) {
-                    delIndex.push(mxbObj[i]);
-                }
-            }
-            $("input[name='check_node_3']").each(function () {
-                if (delIndex.contains($(this).val())) {
-                    $(this).attr("checked", true);
-                }
-            });
-            deleteRow3(3, true);
-        }
-    }
 
     function addCount01(p) {
         if (p.v.o === undefined) {
@@ -75,24 +55,18 @@
             // 查询该发票明细
             $.ajax({
                 type: "post",
-                url: "/workflow/request/taide/financeJs/FinanceAddBack.jsp",
+                url: "/workflow/request/taide/financeJs/FinanceAddFtBack.jsp",
                 cache: false,
                 async: false,
-                data: {"diffVal": bhVal.toString(), "sqrVal": sqrVal, "allVal": newVal.toString(), "operateType": 2},
+                data: {"diffVal": bhVal.toString(), "sqrVal": sqrVal, "allVal": newVal.toString()},
                 success: function (myData) {
                     myData = myData.replace(/\s+/g, "");
                     var myJson = jQuery.parseJSON(myData);
-                    // 不含税金额合计
-                    var allMoney = myJson.allMoney;
-                    var bhsObj = $("#" + bhsje + p.r);
-                    bhsObj.val(allMoney);
-                    bhsObj.trigger('change');
-                    $("#" + bhsje + p.r + 'span').html(allMoney);
-                    // 明细行数组
-                    var myJsonArray = myJson.arrays;
-                    // 新增行数
+
+                    var myJsonArray = myJson.arrays;  // 发票明细表数组
                     let length = myJsonArray.length;
 
+                    // 发票明细表信息新增==================
                     // 查询当前明细行
                     var currentRows;
                     var mxbObj = $("#" + mxbNum4);
@@ -103,60 +77,89 @@
                         currentRows = mxbObj.val().split(",").length;
                     }
 
-                    for (var i = 0; i < length; i++) {
+                    for (let i = 0; i < length; i++) {
                         addRow3(3);
                     }
                     let currentMxs = mxbObj.val().split(",");
                     for (let i = 0; i < length; i++) {
-                        $("#" + fpid + '_' + currentMxs[currentRows]).val(myJsonArray[i].uuid + p.r);
-                        $("#" + fpid + '_' + currentMxs[currentRows] + 'span').html(myJsonArray[i].uuid + p.r);
+                        $("#" + fpid + '_' + currentMxs[currentRows]).val(myJsonArray[i].uuid);
+                        $("#" + fpid + '_' + currentMxs[currentRows] + 'span').html(myJsonArray[i].uuid);
                         $("#" + fph + '_' + currentMxs[currentRows]).val(myJsonArray[i].invoiceNo);
                         $("#" + fph + '_' + currentMxs[currentRows] + 'span').html(myJsonArray[i].invoiceNo);
                         $("#" + bhsjemx + '_' + currentMxs[currentRows]).val(myJsonArray[i].taxAmount);
                         $("#" + bhsjemx + '_' + currentMxs[currentRows] + 'span').html(myJsonArray[i].taxAmount);
                         $("#" + jxs + '_' + currentMxs[currentRows]).val(myJsonArray[i].detailTransferTax);
                         $("#" + jxs + '_' + currentMxs[currentRows] + 'span').html(myJsonArray[i].detailTransferTax);
-                        $("#" + sl + '_' + currentMxs[currentRows]).val(myJsonArray[i].taxrate);
-                        $("#" + sl + '_' + currentMxs[currentRows] + 'span').html(myJsonArray[i].taxrate);
+                        $("#" + sl4 + '_' + currentMxs[currentRows]).val(myJsonArray[i].taxrate);
+                        $("#" + sl4 + '_' + currentMxs[currentRows] + 'span').html(myJsonArray[i].taxrate);
+
                         if (i === length - 1) {
                             $("#" + jxs + '_' + currentMxs[currentRows]).trigger('change');
                             $("#" + bhsjemx + '_' + currentMxs[currentRows]).trigger('change');
                         }
                         currentRows++;
                     }
+
+                    // 发票主表信息新增==================
+                    var mainArrays = myJson.mainArrays; // 发票主表数组
+                    let mainLength = mainArrays.length;
+                    // 查询当前明细行
+                    var mainCurrentRows;
+                    var myMainObj = $("#" + mxbNum5);
+
+                    let mainObjVal = myMainObj.val();
+                    if (mainObjVal === '') {
+                        mainCurrentRows = 0;
+                    } else {
+                        mainCurrentRows = myMainObj.val().split(",").length;
+                    }
+
+                    for (let i = 0; i < mainLength; i++) {
+                        addRow4(4);
+                    }
+                    let mainCurrentMxs = myMainObj.val().split(",");
+                    for (let i = 0; i < mainLength; i++) {
+                        $("#" + fpid5 + '_' + mainCurrentMxs[mainCurrentRows]).val(mainArrays[i].uuid);
+                        $("#" + fpid5 + '_' + mainCurrentMxs[mainCurrentRows] + 'span').html(mainArrays[i].uuid);
+                        $("#" + fph5 + '_' + mainCurrentMxs[mainCurrentRows]).val(mainArrays[i].invoiceNo);
+                        $("#" + fph5 + '_' + mainCurrentMxs[mainCurrentRows] + 'span').html(mainArrays[i].invoiceNo);
+                        $("#" + fplx5 + '_' + mainCurrentMxs[mainCurrentRows]).val(mainArrays[i].invoiceTypeName);
+                        $("#" + fplx5 + '_' + mainCurrentMxs[mainCurrentRows] + 'span').html(mainArrays[i].invoiceTypeName);
+                        $("#" + xsf5 + '_' + mainCurrentMxs[mainCurrentRows]).val(mainArrays[i].salerName);
+                        $("#" + xsf5 + '_' + mainCurrentMxs[mainCurrentRows] + 'span').html(mainArrays[i].salerName);
+                        $("#" + bz5 + '_' + mainCurrentMxs[mainCurrentRows]).val(mainArrays[i].currencyTypeName);
+                        $("#" + bz5 + '_' + mainCurrentMxs[mainCurrentRows] + 'span').html(mainArrays[i].currencyTypeName);
+
+                        $("#" + fphj5 + '_' + mainCurrentMxs[mainCurrentRows]).val(mainArrays[i].totalAmount);
+                        $("#" + fphj5 + '_' + mainCurrentMxs[mainCurrentRows] + 'span').html(mainArrays[i].totalAmount);
+                        $("#" + bhs5 + '_' + mainCurrentMxs[mainCurrentRows]).val(mainArrays[i].invoiceAmount);
+                        $("#" + bhs5 + '_' + mainCurrentMxs[mainCurrentRows] + 'span').html(mainArrays[i].invoiceAmount);
+                        $("#" + se5 + '_' + mainCurrentMxs[mainCurrentRows]).val(mainArrays[i].taxAmount);
+                        $("#" + se5 + '_' + mainCurrentMxs[mainCurrentRows] + 'span').html(mainArrays[i].taxAmount);
+                        $("#" + sfdk5 + '_' + mainCurrentMxs[mainCurrentRows]).val(mainArrays[i].isdeductible);
+                        $("#" + sfdk5 + '_' + mainCurrentMxs[mainCurrentRows] + 'span').html(mainArrays[i].isdeductible);
+
+                        if (i === mainLength - 1) {
+                            $("#" + fphj5 + '_' + mainCurrentMxs[mainCurrentRows]).trigger('change');
+                            $("#" + bhs5 + '_' + mainCurrentMxs[mainCurrentRows]).trigger('change');
+                            $("#" + se5 + '_' + mainCurrentMxs[mainCurrentRows]).trigger('change');
+                        }
+                        mainCurrentRows++;
+                    }
                 }
+
             });
         } else {
-            $.ajax({
-                type: "post",
-                url: "/workflow/request/taide/financeJs/FinanceAddBack.jsp",
-                cache: false,
-                async: false,
-                data: {"allVal": newVal.toString(), "operateType": 1},
-                success: function (myData) {
-                    myData = myData.replace(/\s+/g, "");
-                    var myJson = jQuery.parseJSON(myData);
-                    // 不含税金额合计
-                    var allMoney = myJson.allMoney;
-                    var bshObj = $("#" + bhsje + p.r)
-                    bshObj.val(allMoney);
-                    bshObj.trigger('change');
-                }
-            });
-
             // 删除
             let newSz = newVal.split(',');
             let oldSz = oldVal.split(',');
             bhVal = diff(newSz, oldSz);
-            for (let i = 0; i < bhVal.length; i++) {
-                bhVal[i] = bhVal[i] + p.r;
-            }
 
             var mxbObj = $("#" + mxbNum4).val().split(",");
             let length1 = mxbObj.length;
             // 删除
             var delIndex = [];
-            for (var i = 0; i < length1; i++) {
+            for (let i = 0; i < length1; i++) {
                 if (bhVal.indexOf($("#" + fpid + '_' + mxbObj[i]).val()) !== -1) {
                     delIndex.push(mxbObj[i]);
                 }
@@ -167,6 +170,23 @@
                 }
             });
             deleteRow3(3, true);
+
+            // 删除发票主表信息
+            let mainObj = $("#" + mxbNum5).val().split(",");
+            let mainLength = mainObj.length;
+            // 删除
+            var mainDelIndex = [];
+            for (let i = 0; i < mainLength; i++) {
+                if (bhVal.indexOf($("#" + fpid5 + '_' + mainObj[i]).val()) !== -1) {
+                    mainDelIndex.push(mainObj[i]);
+                }
+            }
+            $("input[name='check_node_4']").each(function () {
+                if (mainDelIndex.contains($(this).val())) {
+                    $(this).attr("checked", true);
+                }
+            });
+            deleteRow4(4, true);
         }
     }
 
@@ -222,7 +242,6 @@
         queryBut.attr("disabled", false);
         queryBut.val('获取发票');
     }
-
     function bindFunction() {
         var c = jQuery("#" + fylx).val();
         if (c === '0') {
@@ -240,8 +259,3 @@
         }
     }
 </script>
-
-
-
-
-
