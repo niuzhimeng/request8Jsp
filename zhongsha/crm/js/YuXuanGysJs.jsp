@@ -1,4 +1,4 @@
-// 询比价流程-物资类- 合并后版本
+// 物资采购预选供应商审批表- 合并后版本
 <script type="text/javascript">
     var mxbNum1 = 'submitdtlid0'; // 明细表1
     let mxbNum2 = 'submitdtlid1';// 明细表2
