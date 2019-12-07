@@ -1,3 +1,4 @@
+<%@ page import="com.alibaba.fastjson.JSONArray" %>
 <%@ page import="com.alibaba.fastjson.JSONObject" %>
 <%@ page import="com.sap.conn.jco.JCoDestination" %>
 <%@ page import="com.sap.conn.jco.JCoFunction" %>
@@ -5,15 +6,13 @@
 <%@ page import="com.sap.conn.jco.JCoTable" %>
 <%@ page import="com.weavernorth.zhongsha.crmsap.ZhsPoolThree" %>
 <%@ page import="weaver.general.BaseBean" %>
-<%@ page import="com.alibaba.fastjson.JSON" %>
-<%@ page import="com.alibaba.fastjson.JSONArray" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
 <%
-    // 物资采购预选供应商 询比价流程-物资类
+    // 物资采购预选供应商审批表
     BaseBean baseBean = new BaseBean();
     String cgsqbhVal = request.getParameter("cgsqbhVal");
-    baseBean.writeLog("询比价流程-物资类Start===========采购申请编号=" + cgsqbhVal);
+    baseBean.writeLog("物资采购预选供应商审批表Start===========采购申请编号=" + cgsqbhVal);
     try {
         JCoDestination jCoDestination = ZhsPoolThree.getJCoDestination();
         jCoDestination.ping();
