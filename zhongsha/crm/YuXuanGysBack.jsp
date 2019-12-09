@@ -58,11 +58,11 @@
         for (int i = 0; i < numRows; i++) {
             itOUtPut.setRow(i);
             JSONObject sonObject = new JSONObject(true);
-            sonObject.put("MATNR", itOutputMsg.getString("MATNR")); // 物资编码
-            sonObject.put("TXZ01", itOutputMsg.getString("TXZ01")); // 物料长描述
-            sonObject.put("MEINS", itOutputMsg.getString("MEINS")); // 单位
-            sonObject.put("MENGE", itOutputMsg.getString("MENGE")); // 数量
-            sonObject.put("LFDAT", itOutputMsg.getString("LFDAT")); // 交货时间
+            sonObject.put("MATNR", itOUtPut.getString("MATNR")); // 物资编码
+            sonObject.put("TXZ01", itOUtPut.getString("TXZ01")); // 物料长描述
+            sonObject.put("MEINS", itOUtPut.getString("MEINS")); // 单位
+            sonObject.put("MENGE", itOUtPut.getString("MENGE")); // 数量
+            sonObject.put("LFDAT", itOUtPut.getString("LFDAT")); // 交货时间
 
             arrays.add(sonObject);
         }
