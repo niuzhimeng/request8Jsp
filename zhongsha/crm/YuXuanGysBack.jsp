@@ -58,6 +58,9 @@
         for (int i = 0; i < numRows; i++) {
             itOUtPut.setRow(i);
             JSONObject sonObject = new JSONObject(true);
+            sonObject.put("BANFN", itOUtPut.getString("BANFN")); // 采购申请号
+            sonObject.put("BNFPO", itOUtPut.getString("BNFPO")); // 行项目
+
             sonObject.put("MATNR", itOUtPut.getString("MATNR")); // 物资编码
             sonObject.put("TXZ01", itOUtPut.getString("TXZ01")); // 物料长描述
             sonObject.put("MEINS", itOUtPut.getString("MEINS")); // 单位

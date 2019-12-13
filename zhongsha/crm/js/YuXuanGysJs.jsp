@@ -10,8 +10,11 @@
     let dw1 = 'field9093'; // 单位
     let sl1 = 'field9094'; // 数量
     let jhsj1 = 'field9095'; // 交货时间
+
+    let cgsqh1 = 'field16017'; // 采购申请号
+    let hxm1 = 'field16018'; // 行项目
     // ===========明细表2字段
-    let gysmc2 = 'field9366'; // 供应商名称
+    let gysmc2 = 'field15984'; // 供应商名称
 
     jQuery(document).ready(function () {
         appendButton();
@@ -22,9 +25,9 @@
             let mx1Val = $("#" + mxbNum1).val().split(",");
             let mx1Length = mx1Val.length;
             for (let i = 0; i < mx1Length; i++) {
-                let wzbm1Val = $("#" + wzbm1 + '_' + mx1Val[i]).val();
+                let wzbm1Val = $("#" + wzbm1 + '_' + mx1Val[i]).val().trim();
                 mx1Array.push({
-                    'wzbm1Val': wzbm1Val.trim()
+                    'wzbm1Val': wzbm1Val.substring(0, 6)
                 });
             }
             params['mx1Array'] = mx1Array;
@@ -105,6 +108,10 @@
                         $("#" + sl1 + '_' + currentMxs[currentRows] + 'span').html(myJsonArray[i].MENGE);
                         $("#" + jhsj1 + '_' + currentMxs[currentRows]).val(myJsonArray[i].LFDAT);
                         $("#" + jhsj1 + '_' + currentMxs[currentRows] + 'span').html(myJsonArray[i].LFDAT);
+                        $("#" + cgsqh1 + '_' + currentMxs[currentRows]).val(myJsonArray[i].LFDAT);
+                        $("#" + cgsqh1 + '_' + currentMxs[currentRows] + 'span').html(myJsonArray[i].LFDAT);
+                        $("#" + hxm1 + '_' + currentMxs[currentRows]).val(myJsonArray[i].LFDAT);
+                        $("#" + hxm1 + '_' + currentMxs[currentRows] + 'span').html(myJsonArray[i].LFDAT);
                         currentRows++;
                     }
                 }
