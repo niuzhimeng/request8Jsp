@@ -13,7 +13,7 @@
     <wea:group context="选择同步范围">
         <wea:item>输入日期</wea:item>
         <wea:item>
-            <input id="tongBu"/> 格式：2019-12-03
+            <input id="tongBu"/> 格式：2019-12-03 如为空，则默认推送前一天数据。
         </wea:item>
 
     </wea:group>
@@ -34,7 +34,7 @@
         var myType = $("#tongBu").val();
         $.ajax({
             type: "post",
-            url: "/workflow/request/zhongsha/sap/AllChuFa.jsp",
+            url: "/workflow/request/zhongsha/sap/AllChuFaGdtz.jsp",
             cache: false,
             async: true,
             timeout: 1000,

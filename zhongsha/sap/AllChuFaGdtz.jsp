@@ -5,6 +5,8 @@
 <%
     String myType = Util.null2String(request.getParameter("myType")).trim();
     if (!"".equals(myType)) {
+        new PushGdtz(myType).execute();
+    }else {
         new PushGdtz().execute();
     }
 
