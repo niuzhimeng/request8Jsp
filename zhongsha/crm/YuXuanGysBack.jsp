@@ -67,6 +67,8 @@
             sonObject.put("MENGE", itOUtPut.getString("MENGE")); // 数量
             sonObject.put("LFDAT", itOUtPut.getString("LFDAT")); // 交货时间
 
+            sonObject.put("BATXT", itOUtPut.getString("BATXT")); // 类型
+
             arrays.add(sonObject);
         }
         returnObject.put("zState", "S");

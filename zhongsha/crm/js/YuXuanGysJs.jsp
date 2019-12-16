@@ -13,6 +13,7 @@
 
     let cgsqh1 = 'field16017'; // 采购申请号
     let hxm1 = 'field16018'; // 行项目
+    let lx1 = 'field16030'; // 类型
     // ===========明细表2字段
     let gysmc2 = 'field15984'; // 供应商名称
 
@@ -108,10 +109,12 @@
                         $("#" + sl1 + '_' + currentMxs[currentRows] + 'span').html(myJsonArray[i].MENGE);
                         $("#" + jhsj1 + '_' + currentMxs[currentRows]).val(myJsonArray[i].LFDAT);
                         $("#" + jhsj1 + '_' + currentMxs[currentRows] + 'span').html(myJsonArray[i].LFDAT);
-                        $("#" + cgsqh1 + '_' + currentMxs[currentRows]).val(myJsonArray[i].LFDAT);
-                        $("#" + cgsqh1 + '_' + currentMxs[currentRows] + 'span').html(myJsonArray[i].LFDAT);
-                        $("#" + hxm1 + '_' + currentMxs[currentRows]).val(myJsonArray[i].LFDAT);
-                        $("#" + hxm1 + '_' + currentMxs[currentRows] + 'span').html(myJsonArray[i].LFDAT);
+                        $("#" + cgsqh1 + '_' + currentMxs[currentRows]).val(myJsonArray[i].BANFN);
+                        $("#" + cgsqh1 + '_' + currentMxs[currentRows] + 'span').html(myJsonArray[i].BANFN);
+                        $("#" + hxm1 + '_' + currentMxs[currentRows]).val(myJsonArray[i].BNFPO);
+                        $("#" + hxm1 + '_' + currentMxs[currentRows] + 'span').html(myJsonArray[i].BNFPO);
+                        $("#" + lx1 + '_' + currentMxs[currentRows]).val(myJsonArray[i].BATXT);
+                        $("#" + lx1 + '_' + currentMxs[currentRows] + 'span').html(myJsonArray[i].BATXT);
                         currentRows++;
                     }
                 }
