@@ -1,3 +1,11 @@
+<script src="/workflow/request/testJsp/shauter_wev8.js"></script>
+<script type="text/javascript">
+    let xlk = '7029';
+    $(function () {
+        changeFieldShowattr(xlk, "3", "0");//1、编辑 2、必填 3、只读; 0主表 1明细表
+    })
+</script>
+
 <script type="text/javascript">
     var zbbs = "#field7514";//主办部室
     var cbbs = "#field7515";//承办部室
