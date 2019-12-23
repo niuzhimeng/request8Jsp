@@ -31,6 +31,13 @@
         }
         baseBean.writeLog("listMap: " + JSONObject.toJSONString(listMap));
 
+        // 供应商id - name的map
+        Map<String, String> gysNaeMap = new HashMap<String, String>();
+        recordSet.executeQuery("select id, gysmc from uf_crm_gysxx");
+        while (recordSet.next()) {
+            gysNaeMap.put(recordSet.getString("id"), recordSet.getString("gysmc"));
+        }
+
         JSONObject jsonObject = JSONObject.parseObject(myJson);
 
         // 物资信息
@@ -55,7 +62,7 @@
             for (String wzStr : allWzList) {
                 if (wzList == null || !wzList.contains(wzStr)) {
                     // 该供应商不包含该物料
-                    sonBuilder.append("供应商: ").append(gysmc2Val).append(", 与: ").append(wzStr)
+                    sonBuilder.append("供应商: ").append(gysNaeMap.get(gysmc2Val)).append(", 与: ").append(wzStr)
                             .append(", 不存在关系。").append("\r\n").append("</br>");
                 }
             }

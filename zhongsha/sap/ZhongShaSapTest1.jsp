@@ -21,18 +21,20 @@
         JCoDestination jCoDestination = getJCoDestination();
         jCoDestination.ping();
         baseBean.writeLog("ping 通=====");
-        JCoFunction function = jCoDestination.getRepository().getFunction("ZFM_CRM_OA_INF_PO_CREATE");
+        JCoFunction function = jCoDestination.getRepository().getFunction("ZFM_CRM_OA_INF_ZMRHQ_UP");
 
-        baseBean.writeLog("function: "+ function);
+        baseBean.writeLog("function: " + function);
 
+        function.getImportParameterList().setValue("IV_LIFNR", "1");
+        function.getImportParameterList().setValue("IV_EKORG", "2");
         //function.execute(jCoDestination);
 
-        JCoTable itPmordR = function.getTableParameterList().getTable("IT_INPUT");
-        baseBean.writeLog("itPmordR: "+ itPmordR);
+        JCoTable itMatkl = function.getTableParameterList().getTable("IT_MATKL");
+        baseBean.writeLog("itMatkl=============: "+ itMatkl);
 
-        int fieldCount = itPmordR.getFieldCount();
+        int fieldCount = itMatkl.getFieldCount();
         for (int i = 0; i < fieldCount; i++) {
-            baseBean.writeLog(itPmordR.getMetaData().getName(i) + ", " + itPmordR.getMetaData().getDescription(i));
+            baseBean.writeLog(itMatkl.getMetaData().getName(i) + ", " + itMatkl.getMetaData().getDescription(i));
         }
         baseBean.writeLog("输出表=============");
 
