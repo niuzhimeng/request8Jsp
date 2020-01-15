@@ -159,6 +159,7 @@
                 } else {
                     // 删除原有明细
                     detailSet.executeUpdate("delete from uf_fpseinfo where uuid = '" + uuid + "'");
+                    detailSet.executeUpdate("delete from uf_fpseinfo where invoiceNo = '" + invoiceNo + "'");
                     for (int j = 0; j < detailList.size(); j++) {
                         detailSet.executeUpdate(insertDetailSql,
                                 uuid,

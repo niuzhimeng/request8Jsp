@@ -1,9 +1,9 @@
 // 差旅及用车申请表
 <script type="text/javascript">
-    let startDate = 'field6783';
-    let endDate = 'field6784';
-    let startDateSfxxr = 'field14717'; // 是否休息日
-    let endDateSfxxr = 'field14718'; // 是否休息日
+    var startDate = 'field6783';
+    var endDate = 'field6784';
+    var startDateSfxxr = 'field14717'; // 是否休息日
+    var endDateSfxxr = 'field14718'; // 是否休息日
     jQuery(document).ready(function () {
         $("#" + startDate).bindPropertyChange(function () {
             zsExecute()
@@ -14,8 +14,8 @@
     });
 
     function zsExecute() {
-        let startDateVal = $("#" + startDate).val();
-        let endDateVal = $("#" + endDate).val();
+        var startDateVal = $("#" + startDate).val();
+        var endDateVal = $("#" + endDate).val();
         $.ajax({
             type: "post",
             url: "/workflow/request/zhongsha/crm/WorkDayJudgeBack.jsp",
@@ -50,10 +50,10 @@
     //用车时   日期 + 时间
     var startdatetime = "";
 
-    let startDate = 'field10854'; // 乘车日期
-    let endDate = 'field10855'; // 返回日期
-    let startDateSfxxr = 'field14719'; // 是否休息日
-    let endDateSfxxr = 'field14720'; // 是否休息日
+    var startDate = 'field10854'; // 乘车日期
+    var endDate = 'field10855'; // 返回日期
+    var startDateSfxxr = 'field14719'; // 是否休息日
+    var endDateSfxxr = 'field14720'; // 是否休息日
 
     //页面加载事件
     $(function () {
@@ -130,8 +130,8 @@
     }
 
     function zsExecute() {
-        let startDateVal = $("#" + startDate).val();
-        let endDateVal = $("#" + endDate).val();
+        var startDateVal = $("#" + startDate).val();
+        var endDateVal = $("#" + endDate).val();
         $.ajax({
             type: "post",
             url: "/workflow/request/zhongsha/crm/WorkDayJudgeBack.jsp",
@@ -166,10 +166,10 @@
     //用车时   日期 + 时间
     var startdatetime = "";
 
-    let startDate = 'field14316';
-    let endDate = 'field14317';
-    let startDateSfxxr = 'field14721'; // 是否休息日
-    let endDateSfxxr = 'field14722'; // 是否休息日
+    var startDate = 'field14316';
+    var endDate = 'field14317';
+    var startDateSfxxr = 'field14721'; // 是否休息日
+    var endDateSfxxr = 'field14722'; // 是否休息日
 
     //页面加载事件
     $(function () {
@@ -248,8 +248,8 @@
     }
 
     function zsExecute() {
-        let startDateVal = $("#" + startDate).val();
-        let endDateVal = $("#" + endDate).val();
+        var startDateVal = $("#" + startDate).val();
+        var endDateVal = $("#" + endDate).val();
         $.ajax({
             type: "post",
             url: "/workflow/request/zhongsha/crm/WorkDayJudgeBack.jsp",
