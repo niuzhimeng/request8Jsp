@@ -177,3 +177,17 @@
         $("#" + xmmcMain).val(mx1Val);
     }
 </script>
+
+// 浏览按钮给默认值
+<script type="text/javascript">
+    var fzzd = 'field16302'; // 被赋值字段
+    jQuery(document).ready(function () {
+        setTimeout(function () {
+            $('#' + fzzd + '_0').val(17);
+            $('#' + fzzd + '_0span').html('<a title="" href="/formmode/view/AddFormMode.jsp?type=0&amp;modeId=64&amp;formId=-227&amp;billid=17" target="_blank">公司实景展示-库房</a>');
+            $('#' + fzzd + '_1').val(18);
+            $('#' + fzzd + '_1span').html('<a title="" href="/formmode/view/AddFormMode.jsp?type=0&amp;modeId=64&amp;formId=-227&amp;billid=18" target="_blank">其他</a>');
+        },1000);
+
+    });
+</script>
