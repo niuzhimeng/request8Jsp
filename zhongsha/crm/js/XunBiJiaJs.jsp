@@ -103,7 +103,7 @@
 </script>
 
 
-// 询比价流程-物资类(金额计算)
+// 询比价流程-物资类(金额计算) 第一节点
 <script type="text/javascript">
     var dwsl = 'field16006'; // 询比价单位数量
     var pjbj = 'field16293'; // 平均报价
@@ -133,6 +133,7 @@
         }
     });
 
+    // 计算平均值
     function myJs() {
         var sl = Number($("#" + dwsl).val()) + 1; // 选择客户的数量
         var allCont = 0; // 供应商价格总和
@@ -152,5 +153,27 @@
         }
         $("#" + pjbj).val(pjs);
         $("#" + pjbj + 'span').html(pjs);
+    }
+</script>
+
+
+// 检维修结算流程, 明细第一行“项目名称”赋值给主表“项目名称”（1节点执行）
+<script src="/workflow/request/zhongsha/cw.js"></script>
+<script type="text/javascript">
+    var mxbNum1 = 'submitdtlid0'; // 明细表1
+    var xmmcDetail = 'field16451'; // 项目名称-明细表
+    var xmmcMain = 'field6605'; // 项目名称-主表
+    jQuery(document).ready(function () {
+        _C.run2(mxbNum1, fuZhi);
+        _C.run2(xmmcDetail, fuZhi);
+    });
+
+    function fuZhi(p) {
+        if (p.v.o === undefined) {
+            return;
+        }
+        var split = $("#" + mxbNum1).val().split(',');
+        var mx1Val = $("#" + xmmcDetail + "_" + split[0]).val();
+        $("#" + xmmcMain).val(mx1Val);
     }
 </script>
