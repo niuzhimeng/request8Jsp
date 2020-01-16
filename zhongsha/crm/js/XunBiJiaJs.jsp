@@ -135,7 +135,6 @@
 
     function myJs() {
         var sl = Number($("#" + dwsl).val()) + 1; // 选择客户的数量
-        console.log('选择客户数量', sl)
         var allCont = 0; // 供应商价格总和
         var count0 = 0;
         for (var i = 0; i < sl; i++) {
@@ -145,9 +144,12 @@
             }
             allCont += curVVal;
         }
-        allCont = allCont / 100;
-        sl -= count0;
-        var pjs = (allCont / sl).toFixed(2);
+        var pjs = 0; // 平均值
+        if (allCont > 0) {
+            allCont = allCont / 100;
+            sl -= count0;
+            pjs = (allCont / sl).toFixed(2);
+        }
         $("#" + pjbj).val(pjs);
         $("#" + pjbj + 'span').html(pjs);
     }
