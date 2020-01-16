@@ -42,7 +42,7 @@
     });
 </script>
 
-// 询比价流程-物资类
+// 询比价流程-物资类（暂不上线，待定）
 <script type="text/javascript">
     var mxbNum6 = 'submitdtlid5'; // 明细表6
     // ===========明细表6字段
@@ -71,7 +71,7 @@
             var mx6Length = mx6Val.length;
             for (var i = 0; i < mx6Length; i++) {
                 var zbgys6Val = $("#" + zbgys6 + '_' + mx6Val[i]).val();
-                var gysVal = $("#" +   map[zbgys6Val]).val();
+                var gysVal = $("#" + map[zbgys6Val]).val();
 
                 mx6Array.push({
                     'zbgys6Val': gysVal
@@ -100,4 +100,55 @@
             return flag;
         };
     });
+</script>
+
+
+// 询比价流程-物资类(金额计算)
+<script type="text/javascript">
+    var dwsl = 'field16006'; // 询比价单位数量
+    var pjbj = 'field16293'; // 平均报价
+
+    var zja = 'field15350'; // 总价a
+    var zjb = 'field15354'; // 总价b
+    var zjc = 'field15358'; // 总价c
+    var zjd = 'field15362'; // 总价d
+    var zje = 'field15366'; // 总价e
+
+    var zjf = 'field16235'; // 总价f
+    var zjg = 'field16236'; // 总价g
+    var zjh = 'field16237'; // 总价h
+    var zji = 'field16238'; // 总价i
+    var zjj = 'field16239'; // 总价j
+
+    var zjsz = [zja, zjb, zjc, zjd, zje,
+        zjf, zjg, zjh, zji, zjj];
+    jQuery(document).ready(function () {
+        $("#" + dwsl).bindPropertyChange(function () {
+            myJs();
+        });
+        for (var i = 0; i < zjsz.length; i++) {
+            $("#" + zjsz[i]).bindPropertyChange(function () {
+                myJs();
+            });
+        }
+    });
+
+    function myJs() {
+        var sl = Number($("#" + dwsl).val()) + 1; // 选择客户的数量
+        console.log('选择客户数量', sl)
+        var allCont = 0; // 供应商价格总和
+        var count0 = 0;
+        for (var i = 0; i < sl; i++) {
+            var curVVal = $("#" + zjsz[i]).val() * 100;
+            if (curVVal == 0) {
+                count0++;
+            }
+            allCont += curVVal;
+        }
+        allCont = allCont / 100;
+        sl -= count0;
+        var pjs = (allCont / sl).toFixed(2);
+        $("#" + pjbj).val(pjs);
+        $("#" + pjbj + 'span').html(pjs);
+    }
 </script>

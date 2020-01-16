@@ -10,11 +10,11 @@
         var szlen = currentRows.length;
         for (var i = 0; i < szlen; i++) {
             var val = $("#" + jtgj + '_' + currentRows[i]).val();
-            if (val == '0') {
+            if (val === '0') {
                 $("#" + mxid + '_' + currentRows[i] + 'span').append("<div class='myPointRed'/>");
-            } else if (val == '1') {
+            } else if (val === '1') {
                 $("#" + mxid + '_' + currentRows[i] + 'span').append("<div class='myPointGreen'/>");
-            } else if (val == '2') {
+            } else if (val === '2') {
                 $("#" + mxid + '_' + currentRows[i] + 'span').append("<div class='myPointYellow'/>");
             }
         }
