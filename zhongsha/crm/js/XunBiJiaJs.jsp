@@ -191,3 +191,28 @@
 
     });
 </script>
+
+<script src="/workflow/request/zhongsha/cw.js"></script>
+<script type="text/javascript">
+    var mxbNum1 = 'submitdtlid0'; // 明细表1
+
+    var xmmcDetail = 'field16439';   // 项目名称-明细表
+    var xmmcMain = 'field16441';    // 项目名称-主表
+
+    var gdhDetail = 'field15621';   // 工单号-明细表
+    var gdhMain = 'field16440';    // 工单号主表
+
+    jQuery(document).ready(function () {
+        _C.run2(mxbNum1, fuZhi);
+        _C.run2(xmmcDetail, fuZhi);
+    });
+
+    function fuZhi(p) {
+        if (p.v.o === undefined) {
+            return;
+        }
+        var split = $("#" + mxbNum1).val().split(',');
+        var mx1Val = $("#" + xmmcDetail + "_" + split[0]).val();
+        $("#" + xmmcMain).val(mx1Val);
+    }
+</script>

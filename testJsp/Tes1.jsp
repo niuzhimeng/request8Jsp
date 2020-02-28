@@ -253,4 +253,38 @@ return istrue;
 </script>
 
 
+<script src="/workflow/request/zhongsha/cw.js"></script>
+<script type="text/javascript">
+    var mxbNum1 = 'submitdtlid0'; // 明细表1
+    var xmmcDetail = 'field15021';   // 工单号-明细表
+    var xmmcMain = 'field15023';    // 工单号-主表
+    jQuery(document).ready(function () {
+        _C.run2(mxbNum1, fuZhi);
+        _C.run2(xmmcDetail, fuZhi);
+    });
+
+    function fuZhi(p) {
+        if (p.v.o === undefined) {
+            return;
+        }
+        var split = $("#" + mxbNum1).val().split(',');
+        var mx1Val = $("#" + xmmcDetail + "_" + split[0]).val();
+        $("#" + xmmcMain).val(mx1Val);
+        $("#" + xmmcMain + 'span').html(mx1Val);
+    }
+</script>
+
+<script type="text/javascript">
+    var id = 0;
+    window.open('/formmode/view/AddFormMode.jsp?isfromTab=0&modeId=71&formId=-224&type=2&billid=' + id + '&viewfrom=fromsearchlist&opentype=0&customid=70&isRefreshTree=0&mainid=0&istabinline=0&tabcount=1&tabid=0&customTreeDataId=null')
+</script>
+
+
+
+
+
+
+
+
+
 

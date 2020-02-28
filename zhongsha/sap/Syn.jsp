@@ -15,8 +15,11 @@
         <wea:item>
             <select id="tongBu">
                 <option value="0">获取工单台账</option>
-
             </select>
+        </wea:item>
+        <wea:item>输入版本</wea:item>
+        <wea:item>
+            <input id="myVersion"/> 选填
         </wea:item>
 
     </wea:group>
@@ -35,13 +38,14 @@
 
     function onBtnSearchClick() {
         var myType = $("#tongBu").val();
+        var myVersion = $("#myVersion").val();
         $.ajax({
             type: "post",
             url: "/workflow/request/zhongsha/sap/AllChuFa.jsp",
             cache: false,
             async: true,
             timeout: 1000,
-            data: {"myType": myType},
+            data: {"myType": myType, "myVersion": myVersion},
             complete: function (XMLHttpRequest, status) {
                 window.top.Dialog.alert("后台执行中...");
             }
