@@ -8,18 +8,14 @@
 <script type="text/javascript" language="javascript" src="/FCKEditor/FCKEditorExt_wev8.js"></script>
 <html>
 <script src="/workflow/request/testJsp/shauter_wev8.js"></script>
-<h3 style="margin-left: 23px">手动触发定时任务</h3>
+<h3 style="margin-left: 23px">手动触更新合同执行报表</h3>
 <wea:layout type="2col">
     <wea:group context="选择同步范围">
         <wea:item>请选择</wea:item>
         <wea:item>
             <select id="tongBu">
-                <option value="0">获取工单台账</option>
+                <option value="0">合同执行报表</option>
             </select>
-        </wea:item>
-        <wea:item>输入版本</wea:item>
-        <wea:item>
-            <input id="myVersion"/> 选填
         </wea:item>
 
     </wea:group>
@@ -38,14 +34,13 @@
 
     function onBtnSearchClick() {
         var myType = $("#tongBu").val();
-        var myVersion = $("#myVersion").val();
         $.ajax({
             type: "post",
-            url: "/workflow/request/zhongsha/sap/AllChuFa.jsp",
+            url: "/workflow/request/zhongsha/sap/AllChuFaReport.jsp",
             cache: false,
             async: true,
             timeout: 1000,
-            data: {"myType": myType, "myVersion": myVersion},
+            data: {"myType": myType},
             success: function (data) {},
             complete: function (XMLHttpRequest, status) {
                 window.top.Dialog.alert("后台执行中...");
