@@ -1,4 +1,4 @@
-// 物资采购预选供应商审批表- 合并后版本
+// 物资采购预选供应商审批表
 <script type="text/javascript">
     var mxbNum1 = 'submitdtlid0'; // 明细表1
     var mxbNum2 = 'submitdtlid1';// 明细表2
@@ -13,58 +13,85 @@
 
     var cgsqh1 = 'field16017'; // 采购申请号
     var hxm1 = 'field16018'; // 行项目
-    var lx1 = 'field16030'; // 类型
+    var ddms = 'field9090'; // 订单描述
     // ===========明细表2字段
     var gysmc2 = 'field15984'; // 供应商名称
 
     jQuery(document).ready(function () {
         appendButton();
         checkCustomize = function () {
-            var params = {};
-            // 拼接明细表1
-            var mx1Array = [];
-            var mx1Val = $("#" + mxbNum1).val().split(",");
-            var mx1Length = mx1Val.length;
-            for (var i = 0; i < mx1Length; i++) {
-                var wzbm1Val = $("#" + wzbm1 + '_' + mx1Val[i]).val().trim();
+            return checkGys();
+        };
+    });
+
+    function checkGysButton() {
+        var flag = checkGys();
+        if (flag) {
+            window.top.Dialog.alert('校验通过！');
+        }
+
+    }
+
+    function checkGys() {
+        var params = {};
+        // 拼接明细表1
+        var mx1Array = [];
+        var mx1Val = $("#" + mxbNum1).val();
+        if(mx1Val == null || mx1Val === ''){
+            window.top.Dialog.alert('明细表1数据不完整！');
+            return false;
+        }
+        var mx1ValShuZu = mx1Val.split(",");
+        var mx1Length = mx1ValShuZu.length;
+        for (var i = 0; i < mx1Length; i++) {
+            var wzbm1Val = $("#" + wzbm1 + '_' + mx1Val[i]).val();
+            if (wzbm1Val != null) {
+                wzbm1Val = wzbm1Val.trim();
                 mx1Array.push({
                     'wzbm1Val': wzbm1Val.substring(0, 6)
                 });
             }
-            params['mx1Array'] = mx1Array;
+        }
+        params['mx1Array'] = mx1Array;
 
-            // 拼接明细表2
-            var mx2Array = [];
-            var mx2Val = $("#" + mxbNum2).val().split(",");
-            var mx2Length = mx2Val.length;
-            for (var j = 0; j < mx2Length; j++) {
-                var gysmc2Val = $("#" + gysmc2 + '_' + mx2Val[j]).val();
+        // 拼接明细表2
+        var mx2Array = [];
+        var mx2Val = $("#" + mxbNum2).val();
+        if(mx2Val == null|| mx2Val === ''){
+            window.top.Dialog.alert('明细表2数据不完整！');
+            return false;
+        }
+        var mx2ValShuZu = mx2Val.split(",");
+        var mx2Length = mx2ValShuZu.length;
+        for (var j = 0; j < mx2Length; j++) {
+            var gysmc2Val = $("#" + gysmc2 + '_' + mx2Val[j]).val();
+            if (gysmc2Val != null) {
                 mx2Array.push({
                     "gysmc2Val": gysmc2Val.trim()
                 });
             }
+        }
 
-            params['mx2Array'] = mx2Array;
-            var myJson = JSON.stringify(params);
-            var flag = false;
-            $.ajax({
-                type: "post",
-                url: "/workflow/request/zhongsha/crm/YuXuanCheckBack.jsp",
-                cache: false,
-                async: false,
-                data: {"myJson": myJson},
-                success: function (myData) {
-                    myData = myData.replace(/\s+/g, "");
-                    if ("true" === myData) {
-                        flag = true;
-                    } else {
-                        window.top.Dialog.alert(myData);
-                    }
+        params['mx2Array'] = mx2Array;
+        var myJson = JSON.stringify(params);
+        var flag = false;
+        $.ajax({
+            type: "post",
+            url: "/workflow/request/zhongsha/crm/YuXuanCheckBack.jsp",
+            cache: false,
+            async: false,
+            data: {"myJson": myJson},
+            success: function (myData) {
+                myData = myData.replace(/\s+/g, "");
+                if ("true" === myData) {
+                    flag = true;
+                } else {
+                    window.top.Dialog.alert(myData);
                 }
-            });
-            return flag;
-        };
-    });
+            }
+        });
+        return flag;
+    }
 
     function newButton() {
         var cgsqbhVal = $("#" + cgsqbh).val();
@@ -113,8 +140,8 @@
                         $("#" + cgsqh1 + '_' + currentMxs[currentRows] + 'span').html(myJsonArray[i].BANFN);
                         $("#" + hxm1 + '_' + currentMxs[currentRows]).val(myJsonArray[i].BNFPO);
                         $("#" + hxm1 + '_' + currentMxs[currentRows] + 'span').html(myJsonArray[i].BNFPO);
-                        $("#" + lx1 + '_' + currentMxs[currentRows]).val(myJsonArray[i].BATXT);
-                        $("#" + lx1 + '_' + currentMxs[currentRows] + 'span').html(myJsonArray[i].BATXT);
+                        $("#" + ddms + '_' + currentMxs[currentRows]).val(myJsonArray[i].BATXT);
+                        $("#" + ddms + '_' + currentMxs[currentRows] + 'span').html(myJsonArray[i].BATXT);
                         currentRows++;
                     }
                 }
@@ -124,5 +151,6 @@
 
     function appendButton() {
         jQuery("#getGysInfo").append("<input id=\"getGys\" type=\"button\" value=\"获取供应商\" onclick=\"newButton();\" class=\"e8_btn_top_first\">");
+        jQuery("#checkGysInfo").append("<input id=\"checkGys\" type=\"button\" value=\"校验供应商\" onclick=\"checkGysButton();\" class=\"e8_btn_top_first\">");
     }
 </script>

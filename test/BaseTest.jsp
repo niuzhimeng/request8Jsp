@@ -66,3 +66,20 @@
         });
     })
 </script>
+
+<script type="text/javascript">
+    jQuery(document).ready(function () {
+        checkCustomize = function () {
+            var flag = false;
+            var kyys = 'field7130';//可用预算
+
+            var kyysVal = $("#" + kyys).val();
+
+            window.top.Dialog.alert(kyysVal);
+            if('123' === kyysVal){
+                flag = true;
+            }
+            return flag;
+        }
+    })
+</script>

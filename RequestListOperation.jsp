@@ -121,7 +121,8 @@ String [] requestids=Util.TokenizerString2(requestidlist,",");
 String belongtoUseridList = request.getParameter("belongtoUserids");
 String [] belongtoUserids=Util.TokenizerString2(belongtoUseridList,",");
 
-for (int i=0; i<requestids.length; i++){
+    BaseBean baseBean = new BaseBean();
+    for (int i=0; i<requestids.length; i++){
     String f_weaver_belongto_userid = "";
     if(i < belongtoUserids.length){
         f_weaver_belongto_userid = belongtoUserids[i];
@@ -1144,7 +1145,8 @@ if(src.equals("submit")&&!nodetype.equals("3")&&leaveType.equals(String.valueOf(
     	response.sendRedirect("/notice/RequestError.jsp");
     	return;
     }
-    
+    // nzm 批量提交控制
+    baseBean.writeLog("批量提交拦截："+requestid );
 }
 
 int isfrommobile = Util.getIntValue(Util.null2String(request.getParameter("isfrommobile")));

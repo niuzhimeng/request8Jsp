@@ -7,6 +7,7 @@
 <%@ page import="weaver.workflow.request.WorkflowRequestMessage" %>
 <%@ page import="java.util.*,java.sql.Timestamp,weaver.system.code.*" %>
 <%@ page import="weaver.cpt.util.CptWfUtil" %>
+<%@ page import="weaver.conn.RecordSet" %>
 <%@ include file="/systeminfo/init_wev8.jsp" %>
 <jsp:useBean id="Requestlog" class="weaver.workflow.request.RequestLog" scope="page"/>
 <jsp:useBean id="RequestManager" class="weaver.workflow.request.RequestManager" scope="page"/>
@@ -383,8 +384,25 @@ new Thread(new CptWfUtil(RequestManager,"freezeCptnum")).start();
 boolean logstatus = RequestManager.saveRequestLog() ;
 out.write(TestWorkflowCheck.gotoNextNode(session,src,user, iscreate, workflowid,requestid,RequestManager.getNextNodeid(),prefix));
 
+				weaver.conn.RecordSet recordSet = new RecordSet();
+				recordSet.executeQuery("select b.lastname, a.userid from workflow_currentoperator a left join hrmresource b  on a.userid = b.id where a.requestid = "+requestid+" and a.nodeid = (select nownodeid from workflow_nownode where requestid ='"+requestid+"')");
+				if (recordSet.next()) {
+					new BaseBean().writeLog("下一节点操作者："+ recordSet.getString("lastname"));
+				}
+// nzm拦截流程提交
+if("submit".equals(src)){
+	BaseBean baseBean = new BaseBean();
+	baseBean.writeLog("拦截：有流程提交了workflowid："+workflowid+", requestid："+requestid);
+
+}
+if("reject".equals(src)){
+	BaseBean baseBean = new BaseBean();
+	baseBean.writeLog("拦截：有流程退回了workflowid："+workflowid+", requestid："+requestid);
+}
+
 String fromPDA=Util.null2String((String)session.getAttribute("loginPAD"));
-if(method.equals("")){  
+
+if(method.equals("")){
 	  //如果是测试流程，则不向下执行，防止跳转到非流程页面，导致流程测试退出到登录页面
 	  //目前测试流程不能测试公文及新建文档，所以暂不考虑其相关的跳转
 	  if ("1".equals(session.getAttribute("istest"))) {
