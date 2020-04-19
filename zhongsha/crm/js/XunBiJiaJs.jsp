@@ -156,6 +156,86 @@
     }
 </script>
 
+// 询比价流程-物资类(金额计算) 第三节点
+<script type="text/javascript">
+    var dwsl = 'field16006'; // 询比价单位数量
+    var bjje = 'field15477'; // 报价金额
+    var gysmc = 'field16528'; // 供应商名称
+
+    var config = {
+        '1': 'field15350', // 总价a
+        '2': 'field15354', // 总价b
+        '3': 'field15358', // 总价c
+        '4': 'field15362', // 总价d
+        '5': 'field15366', // 总价e
+
+        '6': 'field16235', // 总价f
+        '7': 'field16236', // 总价g
+        '8': 'field16237', // 总价h
+        '9': 'field16238', // 总价i
+        '10': 'field16239', // 总价j
+    };
+
+    var configName = {
+        '1': 'field16012', // 供应商名称a
+        '2': 'field16013', // 供应商名称b
+        '3': 'field16014', // 供应商名称c
+        '4': 'field16015', // 供应商名称d
+        '5': 'field16016', // 供应商名称e
+
+        '6': 'field16220', // 供应商名称f
+        '7': 'field16222', // 供应商名称g
+        '8': 'field16224', // 供应商名称h
+        '9': 'field16226', // 供应商名称i
+        '10': 'field16228', // 供应商名称j
+    };
+
+    // 黄色明细表字段
+    var mxbNum6 = 'submitdtlid5'; // 明细表6
+    var cxgys = 'field16296'; // 参选供应商
+
+    $(function () {
+        appendButton();
+    });
+
+    function newButton() {
+        // 增加黄色明细表行数
+        var dwslVal = Number($("#" + dwsl).val()) + 1;
+        // 查询当前明细行
+        var currentRows;
+        var mxbObj = $("#" + mxbNum6);
+        var mxbObjVal = mxbObj.val();
+        if (mxbObjVal === '') {
+            currentRows = 0;
+        } else {
+            currentRows = mxbObj.val().split(",").length;
+        }
+
+        for (var j = 0; j < dwslVal; j++) {
+            addRow5(5);
+        }
+        var currentMxs = mxbObj.val().split(",");
+        var gysmcNum = 1;
+        for (var i = 0; i < dwslVal; i++) {
+            $("#" + cxgys + '_' + currentMxs[currentRows]).val(gysmcNum);
+            $("#" + bjje + '_' + currentMxs[currentRows]).val($("#" + config[gysmcNum.toString()]).val());
+
+            var gysRel = $("#" + configName[gysmcNum.toString()]).val();
+            $("#" + gysmc + '_' + currentMxs[currentRows]).val(gysRel);
+            // var title = $("#" + configName[gysmcNum.toString()] + 'span').children('a').attr('title');
+            // var mya = "<a title=\"" + title + "\" href=\"/formmode/view/AddFormMode.jsp?type=0&amp;modeId=67&amp;formId=-232&amp;billid=" + gysRel + "\" target=\"_blank\">" + title + "</a>";
+            $("#" + gysmc + '_' + currentMxs[currentRows] + 'span').html($("#" + configName[gysmcNum.toString()] + 'span').children('a').clone());
+
+            gysmcNum++;
+            currentRows++;
+        }
+    }
+
+    function appendButton() {
+        jQuery("#collect").append("<input id=\"collect\" type=\"button\" value=\"报价数据汇总\" onclick=\"newButton();\" class=\"e8_btn_top_first\">");
+    }
+</script>
+
 
 // 检维修结算流程, 明细第一行“项目名称”赋值给主表“项目名称”（1节点执行）
 <script src="/workflow/request/zhongsha/cw.js"></script>
@@ -187,7 +267,7 @@
             $('#' + fzzd + '_0span').html('<a title="" href="/formmode/view/AddFormMode.jsp?type=0&amp;modeId=64&amp;formId=-227&amp;billid=17" target="_blank">公司实景展示-库房</a>');
             $('#' + fzzd + '_1').val(18);
             $('#' + fzzd + '_1span').html('<a title="" href="/formmode/view/AddFormMode.jsp?type=0&amp;modeId=64&amp;formId=-227&amp;billid=18" target="_blank">其他</a>');
-        },1000);
+        }, 1000);
 
     });
 </script>
