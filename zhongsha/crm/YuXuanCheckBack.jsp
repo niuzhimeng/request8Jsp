@@ -9,7 +9,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
 <%
-    // 物资采购预选供应商流程 明细1中“物资编码”列前6位 与 明细2中“供应商名称”查询是否存在
+    // 物资采购预选供应商流程 明细1中“物资编码”列前6位(或前四位，前两位) 与 明细2中“供应商名称”查询是否存在
     BaseBean baseBean = new BaseBean();
     String myJson = request.getParameter("myJson");
     baseBean.writeLog("物资采购预选供应商流程CheckStart===========接收json=" + myJson);
@@ -60,7 +60,9 @@
             String gysmc2Val = jsob.getString("gysmc2Val");
             List<String> wzList = listMap.get(gysmc2Val);
             for (String wzStr : allWzList) {
-                if (wzList == null || !wzList.contains(wzStr)) {
+                String str2 = wzStr.substring(0, 2);
+                String str4 = wzStr.substring(0, 4);
+                if (wzList == null || (!wzList.contains(wzStr) && !wzList.contains(str2) && !wzList.contains(str4))) {
                     // 该供应商不包含该物料
                     sonBuilder.append("供应商: ").append(gysNaeMap.get(gysmc2Val)).append(", 与: ").append(wzStr)
                             .append(", 不存在关系。").append("\r\n").append("</br>");

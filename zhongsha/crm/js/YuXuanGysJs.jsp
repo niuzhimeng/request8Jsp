@@ -44,7 +44,7 @@
         var mx1ValShuZu = mx1Val.split(",");
         var mx1Length = mx1ValShuZu.length;
         for (var i = 0; i < mx1Length; i++) {
-            var wzbm1Val = $("#" + wzbm1 + '_' + mx1Val[i]).val();
+            var wzbm1Val = $("#" + wzbm1 + '_' + mx1ValShuZu[i]).val();
             if (wzbm1Val != null) {
                 wzbm1Val = wzbm1Val.trim();
                 mx1Array.push({
@@ -64,7 +64,7 @@
         var mx2ValShuZu = mx2Val.split(",");
         var mx2Length = mx2ValShuZu.length;
         for (var j = 0; j < mx2Length; j++) {
-            var gysmc2Val = $("#" + gysmc2 + '_' + mx2Val[j]).val();
+            var gysmc2Val = $("#" + gysmc2 + '_' + mx2ValShuZu[j]).val();
             if (gysmc2Val != null) {
                 mx2Array.push({
                     "gysmc2Val": gysmc2Val.trim()
