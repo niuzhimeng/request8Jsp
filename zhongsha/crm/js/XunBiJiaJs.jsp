@@ -296,3 +296,19 @@
         $("#" + xmmcMain).val(mx1Val);
     }
 </script>
+
+// 中沙石化询比价流程（物资） 第一节点 给下拉框赋值
+<script type="text/javascript">
+    var dwsl = 'field16530'; // 询比价单位数量
+    var xlk = 'field16006'; // 下拉框
+
+    jQuery(document).ready(function () {
+        $("#" + dwsl).bindPropertyChange(function () {
+            var dwslVal = $("#" + dwsl).val();
+            $("#" + xlk).val(dwslVal);
+            $("#" + xlk).trigger('change');
+        });
+
+    });
+
+</script>
