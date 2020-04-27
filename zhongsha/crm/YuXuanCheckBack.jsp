@@ -2,10 +2,7 @@
 <%@ page import="com.alibaba.fastjson.JSONObject" %>
 <%@ page import="weaver.conn.RecordSet" %>
 <%@ page import="weaver.general.BaseBean" %>
-<%@ page import="java.util.ArrayList" %>
-<%@ page import="java.util.HashMap" %>
-<%@ page import="java.util.List" %>
-<%@ page import="java.util.Map" %>
+<%@ page import="java.util.*" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
 <%
@@ -51,8 +48,8 @@
         baseBean.writeLog("物资信息：" + JSONObject.toJSONString(allWzList));
 
         // 供应商是否包含物资 校验开始
-        StringBuilder returnBuilder = new StringBuilder();
         StringBuilder sonBuilder = new StringBuilder();
+        Set<String> returnSet = new HashSet<String>();
         // 所有供应商
         JSONArray mx2Array = jsonObject.getJSONArray("mx2Array");
         for (int i = 0; i < mx2Array.size(); i++) {
@@ -64,20 +61,26 @@
                 String str4 = wzStr.substring(0, 4);
                 if (wzList == null || (!wzList.contains(wzStr) && !wzList.contains(str2) && !wzList.contains(str4))) {
                     // 该供应商不包含该物料
-                    sonBuilder.append("供应商: ").append(gysNaeMap.get(gysmc2Val)).append(", 与: ").append(wzStr)
-                            .append(", 不存在关系。").append("\r\n").append("</br>");
+                    sonBuilder.append("供应商：").append(gysNaeMap.get(gysmc2Val)).append("， 与：").append(wzStr)
+                            .append("， 不存在关系。").append("\r\n</br>#");
                 }
             }
         }
-        String returnStr;
+
+        StringBuilder returnStr = new StringBuilder();
         if (sonBuilder.length() > 0) {
-            out.clear();
-            returnStr = returnBuilder.append(sonBuilder).append("</br>").append("请提交关系流程.").toString();
+            String[] split = sonBuilder.toString().split("#");
+            returnSet.addAll(Arrays.asList(split));
+            for (String s : returnSet) {
+                returnStr.append(s);
+            }
+            returnStr.append("\r\n</br>请提交关系流程。");
         } else {
-            returnStr = "true";
+            returnStr = new StringBuilder("true");
         }
-        baseBean.writeLog("校验返回信息： " + returnStr);
-        out.print(returnStr);
+        baseBean.writeLog("校验返回信息： " + returnStr.toString());
+        out.clear();
+        out.print(returnStr.toString());
     } catch (Exception e) {
         baseBean.writeLog("物资采购预选供应商流程CheckErr: " + e);
     }
