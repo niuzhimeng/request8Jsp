@@ -298,17 +298,153 @@
 </script>
 
 // 中沙石化询比价流程（物资） 第一节点 给下拉框赋值
+// 带出预选流程供应商名称
 <script type="text/javascript">
+    // =============== 下拉框赋值
     var dwsl = 'field16530'; // 询比价单位数量
     var xlk = 'field16006'; // 下拉框
 
+    // =============== 明细表隐藏
+    var xbjfs = 'field16308'; // 询比价方式
+
+    // =============== 供应商名称赋值
+    var yxTableName = 'formtable_main_66_dt2'; // 预选流程表名
+    var gysFiled = 'xzgys'; // 预选流程-供应商字段名
+    var gysFiledStr = 'gysmc1'; // 预选流程-供应商中文字段名
+    var yxlc = 'field15337'; // 预选流程
+    var configName = {
+        '1': 'field16012', // 供应商名称a
+        '2': 'field16013', // 供应商名称b
+        '3': 'field16014', // 供应商名称c
+        '4': 'field16015', // 供应商名称d
+        '5': 'field16016', // 供应商名称e
+
+        '6': 'field16220', // 供应商名称f
+        '7': 'field16222', // 供应商名称g
+        '8': 'field16224', // 供应商名称h
+        '9': 'field16226', // 供应商名称i
+        '10': 'field16228', // 供应商名称j
+    };
     jQuery(document).ready(function () {
         $("#" + dwsl).bindPropertyChange(function () {
-            var dwslVal = $("#" + dwsl).val();
-            $("#" + xlk).val(dwslVal);
-            $("#" + xlk).trigger('change');
+            xlkFuZhi();
+        });
+        $("#" + xbjfs).bindPropertyChange(function () {
+            var xbjfsVal = $("#" + xbjfs).val();
+            if (xbjfsVal == 1) {
+                $("#yellowRow").hide();
+            } else {
+                $("#yellowRow").show();
+            }
         });
 
+        $("#" + yxlc).bindPropertyChange(function () {
+            xlkFuZhi();
+            getName();
+        });
     });
 
+    function xlkFuZhi() {
+        var dwslVal = $("#" + dwsl).val();
+        $("#" + xlk).val(dwslVal);
+        $("#" + xlk).trigger('change');
+
+    }
+
+    function getName() {
+        $.ajax({
+            type: "post",
+            url: "/workflow/request/zhongsha/crm/YuXuanGetName.jsp",
+            cache: false,
+            async: true,
+            data: {
+                "yxlc": $("#" + yxlc).val(),
+                'yxTableName': yxTableName,
+                "gysFiled": gysFiled,
+                "gysFiledStr": gysFiledStr
+            },
+            dataType: 'json',
+            success: function (myData) {
+                var gysArray = myData.gysArray;
+
+                var len = gysArray.length;
+                for (var i = 0; i < len; i++) {
+                    var sz = gysArray[i].split(',');
+                    $("#" + configName[i + 1]).val(sz[0]);
+                    var mya = "<a title=\"" + sz[1] + "\" href=\"/formmode/view/AddFormMode.jsp?type=0&amp;modeId=67&amp;formId=-232&amp;billid=" + sz[0] + "\" target=\"_blank\">" + sz[1] + "</a>";
+                    $("#" + configName[i + 1] + 'span').html(mya);
+                }
+            }
+        });
+    }
 </script>
+
+
+// 中沙石化询比价流程（物资） 供应商A节点 明细表【单价字段必填】+ 平均值计算
+<script type="text/javascript">
+    var dj = 'field15374'; // 单价
+    var mxbNum1 = 'submitdtlid0'; // 明细表1
+
+    var dwsl = 'field16006'; // 询比价单位数量
+    var pjbj = 'field16293'; // 平均报价
+
+    var zja = 'field15350'; // 总价a
+    var zjb = 'field15354'; // 总价b
+    var zjc = 'field15358'; // 总价c
+    var zjd = 'field15362'; // 总价d
+    var zje = 'field15366'; // 总价e
+
+    var zjf = 'field16235'; // 总价f
+    var zjg = 'field16236'; // 总价g
+    var zjh = 'field16237'; // 总价h
+    var zji = 'field16238'; // 总价i
+    var zjj = 'field16239'; // 总价j
+
+    var zjsz = [zja, zjb, zjc, zjd, zje,
+        zjf, zjg, zjh, zji, zjj];
+    jQuery(document).ready(function () {
+        checkCustomize = function () {
+            var split = $("#" + mxbNum1).val().split(',');
+            for (var i = 0; i < split.length; i++) {
+                if ($("#" + dj + '_' + split[i]).val() === '') {
+                    alert('【单价】字段不能为空。');
+                    return false;
+                }
+            }
+
+            return confirm("提交后无法撤回或修改报价，请确认提交!");
+        };
+
+        $("#" + dwsl).bindPropertyChange(function () {
+            myJs();
+        });
+        for (var i = 0; i < zjsz.length; i++) {
+            $("#" + zjsz[i]).bindPropertyChange(function () {
+                myJs();
+            });
+        }
+    });
+
+    function myJs() {
+        var sl = Number($("#" + dwsl).val()) + 1; // 选择客户的数量
+        console.log('选择客户数量', sl)
+        var allCont = 0; // 供应商价格总和
+        var count0 = 0;
+        for (var i = 0; i < sl; i++) {
+            var curVVal = $("#" + zjsz[i]).val() * 100;
+            if (curVVal == 0) {
+                count0++;
+            }
+            allCont += curVVal;
+        }
+        var pjs = 0; // 平均值
+        if (allCont > 0) {
+            allCont = allCont / 100;
+            sl -= count0;
+            pjs = (allCont / sl).toFixed(2);
+        }
+        $("#" + pjbj).val(pjs);
+        $("#" + pjbj + 'span').html(pjs);
+    }
+</script>
+
