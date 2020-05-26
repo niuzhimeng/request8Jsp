@@ -2,9 +2,13 @@
 <script type="text/javascript">
     var fzzd = 'field15303'; // 被赋值字段
     var gysmc = 'field15292'; //供应商名称
+    var xydm = 'field15271'; //统一社会信用代码
 
     jQuery(document).ready(function () {
         $("#" + gysmc).bindPropertyChange(function () {
+            checkGys();
+        });
+        $("#" + xydm).bindPropertyChange(function () {
             checkGys();
         });
 
@@ -31,6 +35,7 @@
             async: false,
             data: {
                 "gysmc": $("#" + gysmc).val(),
+                "xydm": $("#" + xydm).val()
             },
             dataType: 'json',
             success: function (myJson) {

@@ -6,15 +6,26 @@
 <%
     // 供应商CRM注册信息提交 + 字段变化 校验是否重复
     BaseBean baseBean = new BaseBean();
+    JSONObject jsonObject = new JSONObject();
     String gysmc = request.getParameter("gysmc");
+    String xydm = request.getParameter("xydm");
     try {
         RecordSet recordSet = new RecordSet();
         boolean state = true;
-        recordSet.executeQuery("select 1 from uf_crm_gysxx where gysmc = '" + gysmc + "'");
-        if (recordSet.next()) {
-            state = false;
+        if (gysmc != null && !"".equals(gysmc)) {
+            recordSet.executeQuery("select 1 from uf_crm_gysxx where gysmc = '" + gysmc + "'");
+            if (recordSet.next()) {
+                state = false;
+            }
         }
-        JSONObject jsonObject = new JSONObject();
+
+        if (xydm != null && !"".equals(xydm)) {
+            recordSet.executeQuery("select 1 from uf_crm_gysxx where tyshxydm = '" + xydm + "'");
+            if (recordSet.next()) {
+                state = false;
+            }
+        }
+
         jsonObject.put("state", state);
 
         out.clear();
