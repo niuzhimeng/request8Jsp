@@ -2,6 +2,7 @@
 <%@ include file="/systeminfo/init_wev8.jsp" %>
 <%@ page import="weaver.conn.RecordSet" %>
 <%@ page import="weaver.general.MD5" %>
+<%@ page import="weaver.general.BaseBean" %>
 <%
     BaseBean baseBean = new BaseBean();
     MD5 md5 = new MD5();
