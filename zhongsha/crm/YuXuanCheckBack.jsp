@@ -58,7 +58,10 @@
             List<String> wzList = listMap.get(gysmc2Val);
             for (String wzStr : allWzList) {
                 String str2 = wzStr.substring(0, 2);
-                String str4 = wzStr.substring(0, 4);
+                String str4 = str2;
+                if (wzStr.length() >= 4) {
+                    str4 = wzStr.substring(0, 4);
+                }
                 if (wzList == null || (!wzList.contains(wzStr) && !wzList.contains(str2) && !wzList.contains(str4))) {
                     // 该供应商不包含该物料
                     sonBuilder.append("供应商：").append(gysNaeMap.get(gysmc2Val)).append("， 与：").append(wzStr)
