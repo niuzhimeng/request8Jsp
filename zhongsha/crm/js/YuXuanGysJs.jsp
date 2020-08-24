@@ -1,4 +1,3 @@
-// 物资采购预选供应商审批表
 <script type="text/javascript">
     var mxbNum1 = 'submitdtlid0'; // 明细表1
     var mxbNum2 = 'submitdtlid1';// 明细表2
@@ -11,11 +10,11 @@
     var sl1 = 'field9094'; // 数量
     var jhsj1 = 'field9095'; // 交货时间
 
-    var cgsqh1 = 'field16017'; // 采购申请号
-    var hxm1 = 'field16018'; // 行项目
+    var cgsqh1 = 'field15723'; // 采购申请号
+    var hxm1 = 'field15724'; // 行项目
     var ddms = 'field9090'; // 订单描述
     // ===========明细表2字段
-    var gysmc2 = 'field15984'; // 供应商名称
+    var gysmc2 = 'field15722'; // 供应商名称
 
     jQuery(document).ready(function () {
         appendButton();
@@ -37,7 +36,7 @@
         // 拼接明细表1
         var mx1Array = [];
         var mx1Val = $("#" + mxbNum1).val();
-        if(mx1Val == null || mx1Val === ''){
+        if (mx1Val == null || mx1Val === '') {
             window.top.Dialog.alert('明细表1数据不完整！');
             return false;
         }
@@ -45,19 +44,26 @@
         var mx1Length = mx1ValShuZu.length;
         for (var i = 0; i < mx1Length; i++) {
             var wzbm1Val = $("#" + wzbm1 + '_' + mx1ValShuZu[i]).val();
-            if (wzbm1Val != null) {
+            if (wzbm1Val != null && '' !== wzbm1Val) {
+                if (wzbm1Val.length === 1) {
+                    window.top.Dialog.alert('输入不合规，请检查！');
+                    return false;
+                }
                 wzbm1Val = wzbm1Val.trim();
                 mx1Array.push({
                     'wzbm1Val': wzbm1Val.substring(0, 6)
                 });
             }
         }
+        if (mx1Array.length <= 0) {
+            return true;
+        }
         params['mx1Array'] = mx1Array;
 
         // 拼接明细表2
         var mx2Array = [];
         var mx2Val = $("#" + mxbNum2).val();
-        if(mx2Val == null|| mx2Val === ''){
+        if (mx2Val == null || mx2Val === '') {
             window.top.Dialog.alert('明细表2数据不完整！');
             return false;
         }
@@ -65,7 +71,7 @@
         var mx2Length = mx2ValShuZu.length;
         for (var j = 0; j < mx2Length; j++) {
             var gysmc2Val = $("#" + gysmc2 + '_' + mx2ValShuZu[j]).val();
-            if (gysmc2Val != null) {
+            if (gysmc2Val != null && gysmc2Val !== '') {
                 mx2Array.push({
                     "gysmc2Val": gysmc2Val.trim()
                 });
@@ -127,21 +133,21 @@
                     var currentMxs = mxbObj.val().split(",");
                     for (var i = 0; i < length; i++) {
                         $("#" + wzbm1 + '_' + currentMxs[currentRows]).val(myJsonArray[i].MATNR);
-                        $("#" + wzbm1 + '_' + currentMxs[currentRows] + 'span').html(myJsonArray[i].MATNR);
+                        // $("#" + wzbm1 + '_' + currentMxs[currentRows] + 'span').html(myJsonArray[i].MATNR);
                         $("#" + wzcms1 + '_' + currentMxs[currentRows]).val(myJsonArray[i].TXZ01);
-                        $("#" + wzcms1 + '_' + currentMxs[currentRows] + 'span').html(myJsonArray[i].TXZ01);
+                        // $("#" + wzcms1 + '_' + currentMxs[currentRows] + 'span').html(myJsonArray[i].TXZ01);
                         $("#" + dw1 + '_' + currentMxs[currentRows]).val(myJsonArray[i].MEINS);
-                        $("#" + dw1 + '_' + currentMxs[currentRows] + 'span').html(myJsonArray[i].MEINS);
+                        // $("#" + dw1 + '_' + currentMxs[currentRows] + 'span').html(myJsonArray[i].MEINS);
                         $("#" + sl1 + '_' + currentMxs[currentRows]).val(myJsonArray[i].MENGE);
-                        $("#" + sl1 + '_' + currentMxs[currentRows] + 'span').html(myJsonArray[i].MENGE);
+                        // $("#" + sl1 + '_' + currentMxs[currentRows] + 'span').html(myJsonArray[i].MENGE);
                         $("#" + jhsj1 + '_' + currentMxs[currentRows]).val(myJsonArray[i].LFDAT);
                         $("#" + jhsj1 + '_' + currentMxs[currentRows] + 'span').html(myJsonArray[i].LFDAT);
                         $("#" + cgsqh1 + '_' + currentMxs[currentRows]).val(myJsonArray[i].BANFN);
-                        $("#" + cgsqh1 + '_' + currentMxs[currentRows] + 'span').html(myJsonArray[i].BANFN);
+                        // $("#" + cgsqh1 + '_' + currentMxs[currentRows] + 'span').html(myJsonArray[i].BANFN);
                         $("#" + hxm1 + '_' + currentMxs[currentRows]).val(myJsonArray[i].BNFPO);
-                        $("#" + hxm1 + '_' + currentMxs[currentRows] + 'span').html(myJsonArray[i].BNFPO);
+                        // $("#" + hxm1 + '_' + currentMxs[currentRows] + 'span').html(myJsonArray[i].BNFPO);
                         $("#" + ddms + '_' + currentMxs[currentRows]).val(myJsonArray[i].BATXT);
-                        $("#" + ddms + '_' + currentMxs[currentRows] + 'span').html(myJsonArray[i].BATXT);
+                        // $("#" + ddms + '_' + currentMxs[currentRows] + 'span').html(myJsonArray[i].BATXT);
                         currentRows++;
                     }
                 }
@@ -150,7 +156,8 @@
     }
 
     function appendButton() {
-        jQuery("#getGysInfo").append("<input id=\"getGys\" type=\"button\" value=\"获取供应商\" onclick=\"newButton();\" class=\"e8_btn_top_first\">");
-        jQuery("#checkGysInfo").append("<input id=\"checkGys\" type=\"button\" value=\"校验供应商\" onclick=\"checkGysButton();\" class=\"e8_btn_top_first\">");
+        jQuery("#getGysInfo").append("<input id=\"getGys\" type=\"button\" value=\"获取采购申请明细\" onclick=\"newButton();\" class=\"e8_btn_top_first\">");
+        jQuery("#checkGysInfo").append("<input id=\"checkGys\" type=\"button\" value=\"校验供应商物料关系\" onclick=\"checkGysButton();\" class=\"e8_btn_top_first\">");
     }
 </script>
+
