@@ -12,6 +12,8 @@
 <%@ page import="java.util.HashMap" %>
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.Map" %>
+<%@ page import="java.io.InputStreamReader" %>
+<%@ page import="java.io.InputStream" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" %>
 <%
     BaseBean baseBean = new BaseBean();
@@ -19,7 +21,7 @@
     baseBean.writeLog("部门同步 Start ========================= " + TimeUtil.getCurrentTimeString());
     try {
         long start = System.currentTimeMillis();
-        String json = getPostData(request.getReader());
+        String json = getPostData(request.getInputStream());
         baseBean.writeLog("接收到MDM数据 ========= " + json);
         JSONArray jsonArray = JSONObject.parseArray(json);
         int allCount = jsonArray.size();
@@ -233,8 +235,9 @@
 
     }
 
-    private static String getPostData(BufferedReader reader) throws Exception {
+    private static String getPostData(InputStream inputStream) throws Exception {
         StringBuilder stringBuilder = new StringBuilder();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, "utf-8"));
         String str;
         while ((str = reader.readLine()) != null) {
             stringBuilder.append(str);

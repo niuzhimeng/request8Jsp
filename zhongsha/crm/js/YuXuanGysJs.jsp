@@ -1,7 +1,16 @@
+/*
+按钮1：抓SAP采购申请明细
+按钮2：校验明细1物资编码的246位与明细2供应商的关系是否在“供应商物料关系表”存在
+物料编码为空部校验
+选择供应商为空不校验
+询比价方式=外部招标不校验
+*/
+
 <script type="text/javascript">
     var mxbNum1 = 'submitdtlid0'; // 明细表1
     var mxbNum2 = 'submitdtlid1';// 明细表2
     var cgsqbh = 'field9117';// 采购申请编号
+    var xbjfs = 'field15725';//   询比价方式
 
     // ===========明细表1字段
     var wzbm1 = 'field9091'; // 物资编码
@@ -55,7 +64,7 @@
                 });
             }
         }
-        if (mx1Array.length <= 0) {
+        if (mx1Array.length <= 0 || $('#' + xbjfs).val() == '2') {
             return true;
         }
         params['mx1Array'] = mx1Array;

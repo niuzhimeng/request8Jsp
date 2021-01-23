@@ -74,9 +74,15 @@
         if (sonBuilder.length() > 0) {
             String[] split = sonBuilder.toString().split("#");
             returnSet.addAll(Arrays.asList(split));
+            int i = 0;
             for (String s : returnSet) {
+                if (i >= 20) {
+                    break;
+                }
                 returnStr.append(s);
+                i++;
             }
+
             returnStr.append("\r\n</br>请提交关系流程。");
         } else {
             returnStr = new StringBuilder("true");

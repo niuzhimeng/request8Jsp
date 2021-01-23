@@ -103,13 +103,13 @@
                 "  AND t1.workflowid in (" + workflowBuilder.toString() + ") " +
                 "  AND t2.usertype = 0 \n" +
                 "  AND t2.userid = '" + myUid + "' \n" +
-                "  AND t2.isremark IN ( '0','1', '5', '8', '9', '7') \n" +
+                // "  AND t2.isremark IN ( '0','1', '5', '8', '9', '7') \n" +
                 "  AND t2.islasttimes = 1 \n" +
                 "  AND ( t1.deleted <> 1 OR t1.deleted IS NULL OR t1.deleted = '' ) \n" +
                 "ORDER BY\n" +
                 "  t2.receivedate DESC,\n" +
                 "  t2.receivetime DESC";
-         baseBean.writeLog("查询待办的sql： " + toDoSql);
+        baseBean.writeLog("查询待办的sql： " + toDoSql);
 
         rs.executeQuery(toDoSql);
         // 待办总数
@@ -123,7 +123,7 @@
             if (i >= defaultCounts) {
                 break;
             }
-            oaUrl = "http://gjoa.hep.cn/gaodeng?forwardUrl=workflow/request/gaodeng/OpenOAFlowBySSO.jsp?requestId=" + rs.getString("requestid");
+            oaUrl = "http://10.1.11.23/gaodeng?forwardUrl=workflow/request/gaodeng/OpenOAFlowBySSO.jsp?requestId=" + rs.getString("requestid");
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("requestId", rs.getString("requestid"));
             jsonObject.put("requestName", rs.getString("requestnamenew"));

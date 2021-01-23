@@ -5,9 +5,10 @@
 <%@ page import="java.util.Arrays" %>
 <%@ page import="weaver.conn.RecordSet" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" %>
-
+<%@ include file="/systeminfo/init_wev8.jsp" %>
 
 <%
+
     String userId = "150";
 
     String[] baseIds = {"-1", "1", "3"};

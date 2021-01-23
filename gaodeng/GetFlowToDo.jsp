@@ -66,6 +66,24 @@
         baseBean.writeLog("当前人部门名称： " + depName);
         baseBean.writeLog("当前人姓名： " + lastName);
 
+        // 去除待办中的通知公告
+        StringBuilder workflowBuilder = new StringBuilder();
+        String mhWorkFlowIdSql = "select * from uf_portal_type where yslx = '001'";
+
+        rs.executeQuery(mhWorkFlowIdSql);
+        if (rs.next()) {
+            String lclx = rs.getString("lclx");
+            String[] splits = lclx.split(",");
+            for (String split : splits) {
+                workflowBuilder.append("'").append(split).append("',");
+            }
+        }
+        if (workflowBuilder.length() > 3) {
+            workflowBuilder.deleteCharAt(workflowBuilder.length() - 1);
+        } else {
+            workflowBuilder.append("'-1'");
+        }
+
         // 查询待办的sql
         String toDoSql = "SELECT\n" +
                 "  t1.requestid,\n" +
@@ -81,9 +99,12 @@
                 "  AND t2.usertype = 0 \n" +
                 "  AND t2.userid = '" + myUid + "' \n" +
                 "  AND t2.isremark IN ( '0','1', '5', '8', '9', '7' ) \n" +
+                "  AND ( t2.takisremark <> -2 OR t2.takisremark IS NULL OR t2.takisremark = '' ) \n" +
                 "  AND t2.islasttimes = 1 \n" +
                 "  AND ( t1.deleted <> 1 OR t1.deleted IS NULL OR t1.deleted = '' ) \n" +
-                "ORDER BY\n" +
+                "  AND t1.workflowid IN ( SELECT id FROM workflow_base WHERE ( isvalid = '1' OR isvalid = '3' ) ) \n" +
+                "  AND t1.workflowid NOT IN (" + workflowBuilder.toString() + ") " +
+                "  ORDER BY \n" +
                 "  t2.receivedate DESC,\n" +
                 "  t2.receivetime DESC";
         baseBean.writeLog("查询待办的sql： " + toDoSql);
@@ -96,7 +117,7 @@
         RecordSet hrmSet = new RecordSet();
 
         while (rs.next()) {
-            oaUrl = "http://gjoa.hep.cn/gaodeng?forwardUrl=workflow/request/gaodeng/OpenOAFlowBySSO.jsp?requestId=" + rs.getString("requestid");
+            oaUrl = "http://10.1.11.23/gaodeng?forwardUrl=workflow/request/gaodeng/OpenOAFlowBySSO.jsp?requestId=" + rs.getString("requestid");
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("requestId", rs.getString("requestid"));
             jsonObject.put("requestName", rs.getString("requestnamenew"));

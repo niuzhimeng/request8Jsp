@@ -53,7 +53,7 @@
         response.setContentType("application/octet-stream");    //设置数据种类
         //获取返回体输出权
         ServletOutputStream output = response.getOutputStream();
-        out.clearBuffer();
+
         OutputStream os = new BufferedOutputStream(output);
         os.write(buffer); // 输出文件
         os.flush();

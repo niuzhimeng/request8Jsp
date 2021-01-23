@@ -34,6 +34,8 @@
         String token = request.getParameter("token");
         String currentTime = request.getParameter("currentTime");
         String getCounts = request.getParameter("getCounts");
+        String getPage = request.getParameter("getPage");
+
         // 子目录id
         String seccategoryId = Util.null2String(request.getParameter("seccategoryId")).trim();
         if ("".equals(seccategoryId)) {
@@ -48,6 +50,11 @@
         int defaultCounts = 5;
         if (getCounts != null && !"".equals(getCounts)) {
             defaultCounts = Integer.parseInt(getCounts);
+        }
+
+        int defaultPage = 1;
+        if (getPage != null && !"".equals(getPage)) {
+            defaultPage = Integer.parseInt(getPage);
         }
 
 
@@ -186,19 +193,23 @@
         }
 
         long start = System.currentTimeMillis();
-        DocInfo[] list = getList(user_new, 1, defaultCounts, seccategoryId.toString());
+        DocInfo[] list = getList(user_new, defaultPage, defaultCounts, seccategoryId.toString());
         long resultTime = System.currentTimeMillis() - start;
-        baseBean.writeLog("获取文档返回总数量： " + list.length + ", 耗时： " + resultTime / 1000);
+        baseBean.writeLog("获取本次文档返回总数量： " + list.length + ", 耗时： " + resultTime / 1000);
+
+        int counts = getDocCountByUser(user_new, seccategoryId);
+        baseBean.writeLog("获取本人指定目录的文档总数： " + counts);
 
         JSONObject jsonObjectAll = new JSONObject();
         JSONArray jsonArray = new JSONArray();
         String oaUrl;
         for (DocInfo docInfo : list) {
-            oaUrl = "http://gjoa.hep.cn/gaodeng?forwardUrl=/docs/docs/DocDsp.jsp?id=" + docInfo.getId() + "&isOpenFirstAss=0";
+            oaUrl = "http://10.1.11.23/gaodeng?forwardUrl=/docs/docs/DocDsp.jsp?id=" + docInfo.getId() + "&isOpenFirstAss=0";
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("docId", docInfo.getId());
             jsonObject.put("docName", docInfo.getDocSubject());
             jsonObject.put("creatorName", docInfo.getDoccreatername());
+            jsonObject.put("creatorDepartment", docInfo.getDocdepartmentStr());
             jsonObject.put("createDate", docInfo.getDoccreatedate() + " " + docInfo.getDoccreatetime());
             jsonObject.put("openUrl", oaUrl);
             jsonObject.put("fromSys", "OA");
@@ -209,6 +220,7 @@
         jsonObjectAll.put("status", "0");
         jsonObjectAll.put("message", "认证成功。");
         jsonObjectAll.put("flowInfo", jsonArray);
+        jsonObjectAll.put("docCounts", counts);
 
         baseBean.writeLog("返回的xml： " + jsonObjectAll.toJSONString());
 
@@ -260,7 +272,7 @@
                 } else if (var2 > 1) {
                     var29 = var3 * var2;
                     var30 = var3;
-                    int var21 = this.getDocCountByUser(var4);
+                    int var21 = this.getDocCountByUser(var4, idList);
                     if (var29 > var21) {
                         var29 = var21;
                         var30 = var21 - var3 * (var2 - 1);
@@ -496,7 +508,7 @@
         return var2;
     }
 
-    public int getDocCountByUser(User var1) throws Exception {
+    public int getDocCountByUser(User var1, String idList) throws Exception {
         if (var1 != null) {
             RecordSet var2 = new RecordSet();
             ShareManager var3 = new ShareManager();
@@ -508,7 +520,7 @@
             }
 
             var4 = var4 + " and ((docstatus = 7 and (sharelevel>1 or (t1.doccreaterid=" + var1.getUID() + ")) ) or t1.docstatus in ('1','2','5')) ";
-            var4 = var4 + "  and seccategory!=0 and (ishistory is null or ishistory = 0) ";
+            var4 = var4 + "  and seccategory in(" + idList + ") and (ishistory is null or ishistory = 0) ";
             var4 = " select count(*) as c " + var4;
             new BaseBean().writeLog("getDocCount: sql = " + var4);
             var2.executeSql(var4);

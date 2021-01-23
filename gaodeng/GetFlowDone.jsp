@@ -40,8 +40,26 @@
             out.print(errObject.toJSONString());
             return;
         }
-
         RecordSet rs = new RecordSet();
+
+        // 去除已办中的通知公告
+        StringBuilder workflowBuilder = new StringBuilder();
+        String mhWorkFlowIdSql = "select * from uf_portal_type where yslx = '001'";
+
+        rs.executeQuery(mhWorkFlowIdSql);
+        if (rs.next()) {
+            String lclx = rs.getString("lclx");
+            String[] splits = lclx.split(",");
+            for (String split : splits) {
+                workflowBuilder.append("'").append(split).append("',");
+            }
+        }
+        if (workflowBuilder.length() > 3) {
+            workflowBuilder.deleteCharAt(workflowBuilder.length() - 1);
+        } else {
+            workflowBuilder.append("'-1'");
+        }
+
         rs.executeQuery("SELECT\n" +
                 "\th.id,\n" +
                 "\th.lastname,\n" +
@@ -91,6 +109,7 @@
                 "\tAND t2.isremark IN ( '2', '3', '4', '6' ) \n" +
                 "\tAND t2.islasttimes = 1 \n" +
                 "\tAND ( t1.deleted <> 1 OR t1.deleted IS NULL OR t1.deleted = '' ) \n" +
+                "  AND t1.workflowid NOT IN (" + workflowBuilder.toString() + ")  " +
                 "ORDER BY\n" +
                 "\tt2.receivedate DESC,\n" +
                 "\tt2.receivetime DESC";
@@ -107,7 +126,7 @@
             if (allCount > defaultInt) {
                 break;
             }
-            oaUrl = "http://gjoa.hep.cn/gaodeng?forwardUrl=workflow/request/gaodeng/OpenOAFlowBySSO.jsp?requestId=" + rs.getString("requestid");
+            oaUrl = "http://10.1.11.23/gaodeng?forwardUrl=workflow/request/gaodeng/OpenOAFlowBySSO.jsp?requestId=" + rs.getString("requestid");
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("requestId", rs.getString("requestid"));
             jsonObject.put("requestName", rs.getString("requestnamenew"));

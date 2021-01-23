@@ -27,11 +27,16 @@
         function.getImportParameterList().setValue("IV_REVNR", "v1");
         //function.execute(jCoDestination);
 
-//        int fieldCount = itMatkl.getFieldCount();
-//        for (int i = 0; i < fieldCount; i++) {
-//            baseBean.writeLog(itMatkl.getMetaData().getName(i) + ", " + itMatkl.getMetaData().getDescription(i));
-//        }
-//        baseBean.writeLog("输出表=============");
+        JCoStructure test = function.getImportParameterList().getStructure("test");
+
+
+        // 表字段输出
+        JCoTable itMatkl = function.getTableParameterList().getTable("");
+        int fieldCount = itMatkl.getFieldCount();
+        for (int i = 0; i < fieldCount; i++) {
+            baseBean.writeLog(itMatkl.getMetaData().getName(i) + ", " + itMatkl.getMetaData().getDescription(i));
+        }
+        baseBean.writeLog("输出表=============");
 
 
     } catch (Exception e) {

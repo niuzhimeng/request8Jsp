@@ -12,17 +12,19 @@
 <%@ page import="java.util.HashMap" %>
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.Map" %>
+<%@ page import="java.io.InputStream" %>
+<%@ page import="java.io.InputStreamReader" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" %>
 <%
 
     // 老师岗位id
-    String teacherId = "63";
+    String teacherId = "400";
 
     BaseBean baseBean = new BaseBean();
     // 人员同步
     baseBean.writeLog("人员同步 Start ========================= " + TimeUtil.getCurrentTimeString());
     try {
-        String json = getPostData(request.getReader());
+        String json = getPostData(request.getInputStream());
         baseBean.writeLog("接收到人员数据 ========= " + json);
         JSONArray jsonArray = JSONObject.parseArray(json);
         int allCount = jsonArray.size();
@@ -325,8 +327,9 @@
         return locationId;
     }
 
-    private static String getPostData(BufferedReader reader) throws Exception {
+    private static String getPostData(InputStream inputStream) throws Exception {
         StringBuilder stringBuilder = new StringBuilder();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, "utf-8"));
         String str;
         while ((str = reader.readLine()) != null) {
             stringBuilder.append(str);
