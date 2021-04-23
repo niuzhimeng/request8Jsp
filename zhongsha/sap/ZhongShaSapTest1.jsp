@@ -5,8 +5,6 @@
 <%@ page import="weaver.general.TimeUtil" %>
 <%@ page import="java.io.File" %>
 <%@ page import="java.io.FileOutputStream" %>
-<%@ page import="java.util.ArrayList" %>
-<%@ page import="java.util.List" %>
 <%@ page import="java.util.Properties" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
@@ -21,22 +19,36 @@
         JCoDestination jCoDestination = getJCoDestination();
         jCoDestination.ping();
         baseBean.writeLog("ping 通=====");
-        JCoFunction function = jCoDestination.getRepository().getFunction("ZFM_CRM_OA_INF_PMORD_GET");
+        JCoFunction function = jCoDestination.getRepository().getFunction("ZCM_EHQ00020");
 
         baseBean.writeLog("function: " + function);
-        function.getImportParameterList().setValue("IV_REVNR", "v1");
+
+        // function.getImportParameterList().setValue("IV_REVNR", "v1");
         //function.execute(jCoDestination);
 
-        JCoStructure test = function.getImportParameterList().getStructure("test");
+        // 查询输入参数（没有输入表，也没有输入结构）
+//        JCoParameterList importParameterList = function.getImportParameterList();
+//        int fieldCount1 = importParameterList.getFieldCount();
+//        for (int i = 0; i < fieldCount1; i++) {
+//            baseBean.writeLog(importParameterList.getMetaData().getName(i) + ", " + importParameterList.getMetaData().getDescription(i));
+//        }
 
-
-        // 表字段输出
-        JCoTable itMatkl = function.getTableParameterList().getTable("");
+//        JCoStructure test = function.getImportParameterList().getStructure("test");
+//
+//
+//        // 表字段输出
+        JCoTable itMatkl = function.getTableParameterList().getTable("IT_INPUT");
         int fieldCount = itMatkl.getFieldCount();
         for (int i = 0; i < fieldCount; i++) {
             baseBean.writeLog(itMatkl.getMetaData().getName(i) + ", " + itMatkl.getMetaData().getDescription(i));
         }
-        baseBean.writeLog("输出表=============");
+        baseBean.writeLog("=============");
+        JCoTable itMatk2 = function.getTableParameterList().getTable("ET_RETURN");
+        int fieldCount2 = itMatk2.getFieldCount();
+        for (int i = 0; i < fieldCount2; i++) {
+            baseBean.writeLog(itMatk2.getMetaData().getName(i) + ", " + itMatk2.getMetaData().getDescription(i));
+        }
+        baseBean.writeLog("=============");
 
 
     } catch (Exception e) {
@@ -49,18 +61,18 @@
 
 <%!
     private static JCoDestination getJCoDestination() throws JCoException {
-        String CONN_NAME = "ZHONG_SHA_POOL_OARFC";
+        String CONN_NAME = "ZHONG_SHA_POOL_OARFC_2021Test";
         Properties properties = new Properties();
         // IP
-        properties.setProperty(DestinationDataProvider.JCO_ASHOST, "10.102.176.184");
+        properties.setProperty(DestinationDataProvider.JCO_ASHOST, "10.102.176.183");
         // 系统编号
         properties.setProperty(DestinationDataProvider.JCO_SYSNR, "00");
         // 客户端编号
-        properties.setProperty(DestinationDataProvider.JCO_CLIENT, "400");
+        properties.setProperty(DestinationDataProvider.JCO_CLIENT, "800");
         // 用户名
         properties.setProperty(DestinationDataProvider.JCO_USER, "RFCOA02");
         // 密码
-        properties.setProperty(DestinationDataProvider.JCO_PASSWD, "init12345");
+        properties.setProperty(DestinationDataProvider.JCO_PASSWD, "init123456");
         // 语言
         properties.setProperty(DestinationDataProvider.JCO_LANG, "zh");
 
@@ -79,7 +91,7 @@
      * 创建连信息接配置文件
      */
     private static void createDestinationDataFile(Properties properties) {
-        String CONN_NAME = "ZHONG_SHA_POOL_OARFC";
+        String CONN_NAME = "ZHONG_SHA_POOL_OARFC_2021Test";
         File destCfg = new File(CONN_NAME + ".jcoDestination");
         try {
             if (!destCfg.exists()) {

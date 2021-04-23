@@ -266,5 +266,34 @@
     }
 </script>
 
+<script type="text/javascript">
+    var mainZd = 'field16223';
+    var detailZd = 'field16177';
+    var mxbNum1 = 'submitdtlid0'; // 明细表1
+    jQuery(document).ready(function () {
+        $("#" + mainZd).bindPropertyChange(function () {
+            var mainZdVal = $('#' + mainZd).val();
+            if (!mainZdVal) {
+                return;
+            }
 
+            if (mainZdVal == '0') {
+                setNewVal(1, 0);
+            } else if (mainZdVal == '1') {
+                setNewVal(0, 1);
+            }
+        });
+    });
+
+    function setNewVal(standard, newVal) {
+        var mxDetail = $('#'+mxbNum1).val().split(',');
+        var len = mxDetail.length;
+        for (var i = 0; i < len; i++) {
+            var currVal = $('#' + detailZd + "_" + mxDetail[i]).val();
+            if (currVal && currVal == standard) {
+                $('#' + detailZd + "_" + mxDetail[i]).val(newVal);
+            }
+        }
+    }
+</script>
 
